@@ -6,7 +6,7 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setMensagem("Login realizado com sucesso! ✅");
+    setMensagem("Login realizado com sucesso!");
   };
 
   return (
