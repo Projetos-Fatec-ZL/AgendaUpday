@@ -15,3 +15,4 @@ document.getElementById("cadastroForm").addEventListener("submit", function(e) {
     mensagem.style.color = "tomato";
   }
 });
+
