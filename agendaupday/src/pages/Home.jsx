@@ -1,7 +1,4 @@
-// src/pages/Home.jsx
-
 import React, { useState, useEffect } from 'react';
-// A linha do 'motion' foi REMOVIDA
 import { Calendar, CheckCircle, BookOpen, LogOut } from 'lucide-react';
 import { isToday, parseISO } from 'date-fns';
 
@@ -9,9 +6,9 @@ import StatCard from '../components/StatCard';
 import EventSection from '../components/EventSection';
 import UpcomingEvents from '../components/UpcomingEvents';
 import NewEventDialog from '../components/NewEventDialog';
-
+//alguns eventos
 const MOCK_EVENTS = [
-  { id: 1, title: 'Prova de Cálculo', date: '2025-10-15T10:00:00', completed: false, category: 'study' },
+  { id: 1, title: 'Prova de matematica', date: '2025-10-15T10:00:00', completed: false, category: 'study' },
   { id: 2, title: 'Estudo em grupo de React', date: '2025-10-15T15:00:00', completed: true, category: 'study' },
   { id: 3, title: 'Entregar trabalho de História', date: '2025-10-16T23:59:00', completed: false, category: 'work' },
   { id: 4, title: 'Planejamento de Estudo da semana', date: '2025-10-17T09:00:00', completed: false, category: 'study' },
@@ -24,7 +21,7 @@ export default function Home() {
   const [showNewEvent, setShowNewEvent] = useState(false);
 
   useEffect(() => {
-    const mockUser = { full_name: "Rachyl Silva" };
+    const mockUser = { full_name: "Rachel" };
     setUser(mockUser);
     setEvents(MOCK_EVENTS);
   }, []);
@@ -55,7 +52,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white">
-      {/* Header agora é uma tag normal, sem animação */}
+      {}
       <header
         className="border-b border-zinc-800/50 backdrop-blur-xl bg-zinc-900/30 sticky top-0 z-10"
       >
@@ -83,7 +80,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* O resto do código continua igual */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatCard title="Eventos Totais" value={events.length} icon={Calendar} gradient="bg-gradient-to-br from-blue-600 to-blue-700" delay={0} />

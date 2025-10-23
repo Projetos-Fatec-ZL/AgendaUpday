@@ -2,7 +2,7 @@ import React from 'react';
 import { Plus, Check } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
+//´Pagina de evento precisa ser atualizada
 export default function EventSection({ events, onEventClick, onComplete }) {
   return (
     <div className="bg-zinc-900 rounded-xl p-6 h-full">
