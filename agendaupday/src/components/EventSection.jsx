@@ -2,15 +2,16 @@ import React from 'react';
 import { Plus, Check } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-//´Pagina de evento precisa ser atualizada
+
 export default function EventSection({ events, onEventClick, onComplete }) {
   return (
     <div className="bg-zinc-900 rounded-xl p-6 h-full">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-white">Todos os Eventos</h2>
-        <button onClick={onEventClick} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md inline-flex items-center">
-  <Plus className="w-4 h-4 mr-2" />
-  Novo Evento
+        <button onClick={onEventClick} 
+          className="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-md inline-flex items-center transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5" >
+          <Plus className="w-4 h-4 mr-2" />
+          Novo Evento
         </button>
       </div>
       <div className="space-y-4">
@@ -18,9 +19,10 @@ export default function EventSection({ events, onEventClick, onComplete }) {
           <p className="text-zinc-400 text-center py-8">Nenhum evento encontrado. Crie um novo!</p>
         ) : (
           events.map(event => (
+            //Animação
             <div
               key={event.id}
-              className={`flex items-center justify-between bg-zinc-800 p-4 rounded-lg transition-all ${event.completed ? 'opacity-50' : ''}`}
+              className={`flex items-center justify-between bg-zinc-800 p-4 rounded-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${event.completed ? 'opacity-50' : ''}`}
             >
               <div className="flex items-center gap-4">
                 {event.completed ? (
@@ -45,8 +47,8 @@ export default function EventSection({ events, onEventClick, onComplete }) {
               </div>
             </div>
           ))
-        )}
-      </div>
-    </div>
+        )} 
+      </div> 
+    </div> 
   );
-}
+} 

@@ -51,28 +51,34 @@ export default function Home() {
   const studyPlans = events.filter(event => event.category === 'study').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white">
-      {}
+    // fundo branco
+    <div className="min-h-screen bg-white text-zinc-900">
+      
       <header
-        className="border-b border-zinc-800/50 backdrop-blur-xl bg-zinc-900/30 sticky top-0 z-10"
+        // borda
+        className="border-b border-gray-200 backdrop-blur-xl bg-white/50 sticky top-0 z-10"
       >
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="bg-blue-600 p-2.5 rounded-xl">
+                {}
                 <Calendar className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-white text-2xl font-bold">AgendaUpday</h1>
-                <p className="text-zinc-400 text-sm">
+               
+                <h1 className="text-zinc-900 text-2xl font-bold">AgendaUpday</h1>
+            
+                <p className="text-zinc-600 text-sm">
                   Olá, {user?.full_name?.split(' ')[0] || 'Estudante'}!
                 </p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="bg-transparent hover:bg-zinc-800 text-zinc-400 hover:text-white font-semibold py-2 px-4 rounded-md inline-flex items-center transition-colors"
-            >
+              // tema claro
+              className="bg-transparent hover:bg-blue-500 text-zinc-600 hover:text-zinc-900 font-semibold py-2 px-4 rounded-md inline-flex items-center transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+              >
               <LogOut className="w-4 h-4 mr-2" />
               Sair
             </button>
@@ -99,6 +105,7 @@ export default function Home() {
           </div>
         </div>
       </main>
+      
       <NewEventDialog
         open={showNewEvent}
         onOpenChange={setShowNewEvent}
@@ -107,3 +114,4 @@ export default function Home() {
     </div>
   );
 }
+  

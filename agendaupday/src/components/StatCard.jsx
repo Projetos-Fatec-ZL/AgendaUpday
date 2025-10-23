@@ -1,14 +1,13 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 
-// O "icon: Icon" renomeia a prop 'icon' para 'Icon' para que possamos usá-la como um componente JSX.
 export default function StatCard({ title, value, icon: Icon, gradient, delay }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay, duration: 0.5 }}
-      className={`p-6 rounded-xl text-white flex items-center justify-between ${gradient}`}
+      whileHover={{ y: -4, scale: 1.05 }} 
+      className={`p-6 rounded-xl text-white flex items-center justify-between ${gradient} transition-shadow duration-200 hover:shadow-2xl`}
     >
       <div className="text-left">
         <p className="text-sm opacity-80">{title}</p>
