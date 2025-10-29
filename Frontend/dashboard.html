@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> AgendaUpday </title>
+    <link rel="stylesheet" href="../CSS/styledboard.css">
+</head>
+<body>
+
+   <header class="main-header">
+    <div class="logo">
+        <i class="fas fa-calendar-alt logo-icon"></i>
+        <div class="logo-text">
+            <h1>AgendaUpday</h1>
+            <span class="greeting">Olá, UserName!</span> </div>
+    </div>
+    <div class="user-menu">
+        <button id="logout-btn" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+    </div>
+</header>
+
+    <main class="container">
+       <section class="stats-cards">
+            <div class="stat-card blue">
+                <div class="card-info">
+                    <span class="card-title">Eventos Totais</span>
+                    <span class="card-value">5</span>
+                </div>
+                <i class="fas fa-calendar-alt card-icon"></i>
+            </div>
+            <div class="stat-card green">
+                <div class="card-info">
+                    <span class="card-title">Concluídos Hoje</span>
+                    <span class="card-value" id="completed-today">0</span>
+                </div>
+                <i class="fas fa-check-circle card-icon"></i>
+            </div>
+            <div class="stat-card purple">
+                <div class="card-info">
+                    <span class="card-title">Planos de Estudo</span>
+                    <span class="card-value">3</span>
+                </div>
+                <i class="fas fa-book card-icon"></i>
+            </div>
+        </section>
+
+        <section class="content-area">
+            <div class="event-list-container">
+                <div class="list-header">
+                    <h2>Todos os Eventos</h2>
+                    <button id="add-event-btn" class="add-btn">
+                        <i class="fas fa-plus"></i>  + Novo Evento
+                    </button> 
+                    <!-- HTML DO ADD EVENTO -->
+                    <div id="novoEventoModal" class="modal-backdrop">
+                   <div class="modal-content">
+                  <div class="modal-header">
+                 <div class="modal-title-row">
+                <h2>Criar Novo Evento</h2>
+                <button id="btnFecharModal" class="close-btn">×</button>
+     </div>
+        <p>Adicione um novo evento à sua agenda</p>
+         </div>
+
+        <form id="createEventForm">
+
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" class="input-title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao"></textarea>
+            </div>
+
+            <div class="row-fields">
+                <div class="form-group">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo" required>
+                        <option value="estudo" selected>Estudo</option>
+                        <option value="prova">Prova</option>
+                        <option value="trabalho">Trabalho</option>
+                        <option value="sono">Sono</option>
+                        <option value="exercicio">Exercício</option>
+                        <option value="evento">Evento</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="prioridade">Prioridade</label>
+                    <select id="prioridade" required>
+                        <option value="alta">Alta</option>
+                        <option value="media" selected>Média</option>
+                        <option value="baixa">Baixa</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row-fields">
+                <div class="form-group">
+                    <label for="dataHora">Data e Hora</label>
+                    <div class="date-time-input-group">
+                        <input type="date id="dataHora" placeholder="dd/mm/aaaa --:--" required>
+                        <span class="calendar-icon">📅</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="duracao">Duração (minutos)</label>
+                    <input type="number" id="duracao" value="60" min="5" required>
+                </div>
+            </div>
+
+            <button type="submit" class="create-event-btn">Criar Evento</button>
+
+        </form>
+        </div>
+</div>
+</div>
+                <div id="event-list-preview" class="event-list">
+                    </div>
+                <a href="#" id="view-all-btn" class="view-all-link">Ver Todos</a>
+            </div>
+
+            <div class="upcoming-events-container">
+                <h2>Próximos Eventos</h2>
+                <div class="upcoming-list">
+                    <p> Nenhum evento futuro na agenda. </p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Todos os Eventos</h2>
+                <button id="close-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div id="modal-event-list" class="event-list">
+                </div>
+        </div>
+    </div>
+
+    <script src="../Javascript/scriptdb.js"></script>
+</body>
+</html>

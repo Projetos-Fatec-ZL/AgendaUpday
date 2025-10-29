@@ -493,7 +493,7 @@ select {
   background-color: #2563eb;
 }
 
-/* 🔸 Responsividade 🔸 */
+/* Responsividade  */
 @media (max-width: 600px) {
   .event-modal {
     width: 95%;
