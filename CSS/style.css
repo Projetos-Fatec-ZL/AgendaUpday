@@ -85,7 +85,7 @@ body {
 }
 
 .carousel-arrow:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.15);
 }
 
 .carousel-arrow.left-arrow {
