@@ -52,6 +52,202 @@ body {
     align-items: center;
     gap: 20px;
 }
+/* Estilo para o grupo de botões de ícone */
+.icon-buttons-group {
+    display: flex;
+    gap: 10px; /* Espaço entre os ícones (engrenagem e lua) */
+    align-items: center;
+}
+
+/* Estilo para os botões de ícone individuais (Engrenagem e Lua) */
+.icon-btn {
+    background: var(--bg-light); /* Cor de fundo sutil para o botão */
+    border: 1px solid var(--border-color); /* Borda sutil */
+    border-radius: 50%; /* botão redondo */
+    width: 40px; /* Tamanho fixo */
+    height: 40px; /* Tamanho fixo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem; /* Tamanho do ícone */
+    color: var(--text-light); /* Cor do ícone */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background-color: var(--primary-blue); /* Fundo azul no hover */
+    color: white; /* Ícone branco no hover */
+    border-color: var(--primary-blue);
+    transform: translateY(-2px); /* Pequeno efeito de elevação */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.icon-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Dark Mode para os botões de ícone */
+.dark-mode .icon-btn {
+    background: #333; /* Fundo escuro para o botão */
+    border-color: #555; /* Borda mais escura */
+    color: var(--text-light);
+}
+.dark-mode .icon-btn:hover {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+:root {
+    /* ... suas variáveis CLARAS existentes ... */
+
+    /* Cores Dark Mode (fallback) */
+    --dm-text-dark: #ffffff;
+    --dm-text-light: #bbb;
+    --dm-bg-light: #121212;
+    --dm-bg-white: #1e1e1e;
+    --dm-border-color: #333333;
+}
+
+/* Aplica o tema escuro quando a classe .dark-mode está no body */
+.dark-mode {
+    --text-dark: var(--dm-text-dark);
+    --text-light: var(--dm-text-light);
+    --bg-light: var(--dm-bg-light);
+    --bg-white: var(--dm-bg-white);
+    --border-color: var(--dm-border-color);
+}
+/* Garante que elementos de card/container mudem para o fundo escuro */
+.dark-mode body,
+.dark-mode .main-header,
+.dark-mode .event-list-container,
+.dark-mode .upcoming-events-container,
+.dark-mode .modal-content {
+    background-color: var(--bg-white); /* Usa o bg de card/container */
+    color: var(--text-dark); /* Troca o texto para branco */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+/* Estiliza Inputs, Textareas e Selects no Dark Mode */
+.dark-mode .form-group input,
+.dark-mode .form-group textarea,
+.dark-mode .form-group select {
+    background-color: var(--dm-bg-white); /* Fundo um pouco mais claro(ex: #282828) */
+    color: var(--dm-text-dark);           /* Cor do texto digitado: Branco */
+    border: 1px solid var(--dm-border-color); /* Borda para demarcar */
+}
+
+/* Opcional: Estilo de Placeholder (texto "dd/mm/aaaa --:--") */
+.dark-mode ::placeholder {
+    color: var(--dm-text-light); /* Cinza claro para o placeholder */
+    opacity: 0.7;
+}
+
+/* Garante que a borda do input de data fique escura */
+.dark-mode .date-time-input-group {
+    border: 1px solid var(--dm-border-color);
+    background-color: var(--dm-bg-white);
+}
+.dark-mode .form-group label {
+    color: var(--text-dark);
+}
+/* Reajusta a cor de fundo da página (geralmente é o bg-light) */
+.dark-mode {
+    background-color: var(--bg-light);
+}
+/*Ajustes no modal de config */
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    margin-bottom: 2.5rem; 
+    padding-bottom: 2.5rem; /* Aumenta o padding inferior */
+    
+    border-bottom: 1px solid var(--border-color);
+}
+/* --- Estilos para o Toggle Switch (ON/OFF) --- */
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 55px;   
+    height: 30px;  
+    flex-shrink: 0;
+    margin-left: 15px; 
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* O "Trilho" do Switch */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc; 
+    transition: .4s;
+    border-radius: 34px; 
+}
+/* O "Círculo" do Switch */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px; 
+    width: 22px;  
+    left: 4px;    
+    bottom: 4px;  
+    background-color: white; 
+    transition: .4s;
+    border-radius: 50%; 
+}
+
+/* Quando o input está CHECADO (ON) */
+input:checked + .slider {
+    background-color: var(--card-green); 
+}
+
+input:checked + .slider:before {
+    transform: translateX(25px); 
+}
+
+/* Estilo deles para o Dark Mode */
+.dark-mode .toggle-switch .slider {
+    background-color: #555; 
+}
+.dark-mode input:checked + .slider {
+    background-color: var(--card-green); 
+}
+/* Quando o input NÃO está checado (OFF) e no Dark Mode */
+.dark-mode .toggle-switch input:not(:checked) + .slider {
+    background-color: #880000; /* Um tom de vermelho escuro no Dark Mode */
+}
+
+/* Quando o input NÃO está checado (OFF) no tema claro */
+.toggle-switch input:not(:checked) + .slider {
+    background-color: #e74c3c; /* ✅ Vermelho forte para OFF no tema claro */
+}
+
+/* Ajuste para o botão de Sair em telas pequenas (se necessário, do seu media query) */
+@media (max-width: 768px) {
+    .user-menu {
+        flex-direction: column; /* Deixa os itens em coluna */
+        align-items: stretch; /* Estica os itens para preencher a largura */
+        gap: 10px; /* Reduz o espaço entre os itens */
+    }
+    .icon-buttons-group {
+        justify-content: flex-end; /* Alinha os ícones à direita */
+        width: 100%;
+    }
+    .logout-btn {
+        width: 100%; /* Faz o botão de sair ocupar 100% da largura */
+    }
+}
 
 /* Botão Sair */
 .logout-btn {

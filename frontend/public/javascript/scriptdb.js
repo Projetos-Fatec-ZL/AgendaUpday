@@ -12,6 +12,61 @@ document.addEventListener("DOMContentLoaded", function() {
     const greetingSpan = document.querySelector('.greeting'); 
     const logoutBtn = document.getElementById('logout-btn'); 
 
+    // --- Dark Mode Elements e Variáveis ---
+    const themeToggleBtn = document.getElementById("theme-toggle-btn");
+    const body = document.body;
+    const icon = themeToggleBtn ? themeToggleBtn.querySelector('i') : null;
+
+// --- Elementos do Modal de Configurações ---
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettingsModalBtn = document.getElementById('close-settings-modal-btn');
+    
+    // Abrir Modal de Configurações
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            // Usa 'flex' para o modal ser visível (display: none no CSS para começar oculto)
+            settingsModal.style.display = 'flex'; 
+        });
+    }
+
+    // Fechar Modal de Configurações (pelo botão 'X')
+    if (closeSettingsModalBtn) {
+        closeSettingsModalBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+    }
+
+    // Fechar Modal de Configurações (clicando fora)
+    if (settingsModal) {
+        settingsModal.addEventListener('click', (event) => {
+            // Verifica se o clique foi no backdrop (fundo cinza)
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+    }
+     // --- Lógica de Toggles (Notificações) ---
+    const emailToggle = document.getElementById('email-notifications');
+    const telegramToggle = document.getElementById('telegram-notifications');
+
+    if (emailToggle && telegramToggle) {
+        // 1. Carregar preferências salvas (se existirem)
+        // O item 'true' ou 'false' é lido como string, por isso a comparação
+        emailToggle.checked = localStorage.getItem('emailNotifications') === 'true';
+        telegramToggle.checked = localStorage.getItem('telegramNotifications') === 'true';
+
+        // 2. Salvar preferência ao mudar
+        emailToggle.addEventListener('change', (e) => {
+            localStorage.setItem('emailNotifications', e.target.checked);
+            console.log('Notificações por email salvas:', e.target.checked);
+        });
+        telegramToggle.addEventListener('change', (e) => {
+            localStorage.setItem('telegramNotifications', e.target.checked);
+            console.log('Notificações por Telegram salvas:', e.target.checked);
+        });
+    }
+
     // Elementos de Modais
     const modalOverlay = document.getElementById("modal-overlay");
     const viewAllBtn = document.getElementById("view-all-btn");
@@ -388,7 +443,45 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
+// Função para aplicar o tema e salvar no localStorage
 
+    function applyTheme(theme) {
+        let icon = null;
+        if (theme === 'dark') {
+            body.classList.add('dark-mode');
+            // Mude o ícone para Sol quando estiver no modo escuro
+            if (icon) icon.className = 'fas fa-sun'; 
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark-mode');
+            // Mude o ícone para Lua quando estiver no modo claro
+            if (icon) icon.className = 'fas fa-moon'; 
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // 1. Aplica a preferência salva ao carregar a página
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else {
+        // Opcional: Detecta a preferência do sistema na primeira visita
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            applyTheme('dark');
+        } else {
+            applyTheme('light');
+        }
+    }
+
+    // 2. Listener para o clique no botão (alterna o tema)
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
+    }
+// --- FIM: Dark Mode ---
 
     // --- Inicialização da Dashboard ---
     fetchUserName(); 

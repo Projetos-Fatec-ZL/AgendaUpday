@@ -17,6 +17,15 @@
             <span class="greeting">Olá, UserName!</span> </div>
     </div>
     <div class="user-menu">
+        <div class="icon-buttons-group">
+        <button id="settings-btn" class="icon-btn">
+            <i class="fas fa-cog"></i>
+        </button>
+
+        <button id="theme-toggle-btn" class="icon-btn">
+            <i class="fas fa-moon"></i> 
+        </button>
+    </div>
         <button id="logout-btn" class="logout-btn">
             <i class="fas fa-sign-out-alt"></i> Sair
         </button>
@@ -150,5 +159,37 @@
     </div>
 
     <script src="../javascript/scriptdb.js"></script>
+    <div id="settings-modal" class="modal-backdrop">
+    <div class="modal-content">
+        
+        <div class="modal-header">
+            <div class="modal-header-text">
+                <h2>Configurações</h2>
+                <p>Gerencie suas preferências de notificação.</p>
+            </div>
+            <button id="close-settings-modal-btn" class="close-btn">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            
+            <div class="setting-row">
+                <label for="email-notifications">Deseja receber notificações por Email?</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="email-notifications" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-row">
+                <label for="telegram-notifications">Deseja receber notificações por Telegram?</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="telegram-notifications">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+        </div>
+    </div>
+</div>
 </body>
 </html>
