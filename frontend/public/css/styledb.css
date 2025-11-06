@@ -213,6 +213,10 @@ h2 {
 }
 
 .modal-header {
+    display: flex;
+    justify-content: space-between; /* Joga o texto para esquerda e o X para direita */
+    align-items: flex-start;
+
     margin-bottom: 1.5rem;
     border-bottom: 1px solid #eee;
     padding-bottom: 1rem;
@@ -241,7 +245,7 @@ display: flex;
     font-size: 2.5rem; 
     cursor: pointer;
     line-height: 1;
-    color: #aaa;
+    color: #908d8dd2;
     padding: 0;
     margin: 0; 
     line-height: 1; 
@@ -277,9 +281,12 @@ display: flex;
     font-size: 1rem;
     font-weight: bold;
     margin-top: 1rem;
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
+
 .create-event-btn:hover {
     background-color: #218838;
+    transform: scale(1.03);
 }
 /*RESPONSIVIDADE*/
 .row-fields {
@@ -451,13 +458,13 @@ display: flex;
     align-items: center;
     margin-bottom: 20px;
 }
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: var(--text-light);
-    cursor: pointer;
+/* btn do criar novo evento */
+.close-btn:hover {
+    color: #e74c3c; 
+    transform: scale(1.1); 
+}
+.close-btn:active {
+    transform: scale(0.95);
 }
 
 .modal-overlay.hidden {

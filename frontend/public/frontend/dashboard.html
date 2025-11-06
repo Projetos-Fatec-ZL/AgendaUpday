@@ -53,18 +53,20 @@
                 <div class="list-header">
                     <h2>Todos os Eventos</h2>
                     <button id="add-event-btn" class="add-btn">
-                        <i class="fas fa-plus"></i>  + Novo Evento
+                        <i class="fas fa-plus"></i>  Novo Evento
                     </button> 
                     <!-- HTML DO ADD EVENTO -->
                     <div id="novoEventoModal" class="modal-backdrop">
                    <div class="modal-content">
                   <div class="modal-header">
-                 <div class="modal-title-row">
-                <h2>Criar Novo Evento</h2>
-                <button id="btnFecharModal" class="close-btn">×</button>
-     </div>
+    <div class="modal-header-text"> 
+        <h2>Criar Novo Evento</h2>
+    
+    </div>
+    <button id="btnFecharModal" class="close-btn">×</button>
+</div>
         <p>Adicione um novo evento à sua agenda</p>
-         </div>
+         
 
         <form id="createEventForm">
 
@@ -105,7 +107,7 @@
                 <div class="form-group">
                     <label for="dataHora">Data e Hora</label>
                     <div class="date-time-input-group">
-                        <input type="date" id="dataHora" placeholder="dd/mm/aaaa --:--" required>
+                       <input type="datetime-local" id="dataHora" required>
                     </div>
                 </div>
 
