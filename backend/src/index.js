@@ -1,15 +1,17 @@
 // src/index.js - Foco em Inicialização e Orquestração
+
 const express = require('express');
+
+// Carrega variáveis de ambiente
 const dotenv = require('dotenv');
+dotenv.config();
+
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth'); // Já importa a rota de autenticação
 const eventsRoutes = require('./routes/events'); // 💡 IMPORTAÇÃO DO NOVO ARQUIVO DE ROTAS
-const startNotificationScheduler = require('./services/notificationService'); 
+const startNotificationScheduler = require('./services/notificationScheduler'); 
 
-
-// Carrega variáveis de ambiente
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
