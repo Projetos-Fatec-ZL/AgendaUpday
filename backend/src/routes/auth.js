@@ -94,4 +94,24 @@ router.post('/login', async (req, res) => {
     }
 });
 
+const auth = require('../middleware/auth'); // Você precisará importar o middleware 'auth'
+
+// ROTA: GET /api/auth
+// @desc    Obter dados do usuário autenticado (incluindo o nome)
+// @access  Privado (Requer Token JWT)
+router.get('/', auth, async (req, res) => {
+    try {
+        // O middleware 'auth' garante que o token é válido e insere o ID do usuário em req.user.id
+        // Busca o usuário pelo ID, excluindo a senha (-password) para não enviá-la ao cliente
+        const user = await User.findById(req.user.id).select('-password');
+        
+        // Retorna o objeto do usuário (que inclui o nome, e-mail, etc.)
+        res.json(user);
+        
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Erro no Servidor');
+    }
+});
+
 module.exports = router;
