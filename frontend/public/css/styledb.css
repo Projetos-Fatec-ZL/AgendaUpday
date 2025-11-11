@@ -131,9 +131,17 @@ body {
 .dark-mode .form-group input,
 .dark-mode .form-group textarea,
 .dark-mode .form-group select {
-    background-color: var(--dm-bg-white); /* Fundo um pouco mais claro(ex: #282828) */
+    background-color: var(--dm-bg-white); /* Fundo um pouco mais claro */
     color: var(--dm-text-dark);           /* Cor do texto digitado: Branco */
     border: 1px solid var(--dm-border-color); /* Borda para demarcar */
+}
+/* Garante que o subtítulo (<p>) no modal seja claro no Dark Mode */
+.dark-mode .modal-header p {
+    color: var(--dm-text-white); 
+}
+.dark-mode .add-btn {
+    background-color: var(--dark-blue-btn); 
+    color: var(--dm-text-dark); 
 }
 
 /* Opcional: Estilo de Placeholder (texto "dd/mm/aaaa --:--") */
