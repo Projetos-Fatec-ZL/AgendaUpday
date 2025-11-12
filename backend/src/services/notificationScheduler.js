@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const Event = require('../models/Event');
-const User = require('../models/User'); // 1. NOVO: Importa o modelo de Usuário
-const { sendEventNotificationEmail } = require('./notificationService'); // 2. NOVO: Importa a função REAL de envio
+const User = require('../models/User'); 
+const { sendEventNotificationEmail } = require('./notificationService'); 
 
 // Define a antecedência em horas para a notificação (ex: 24 horas antes)
 const ADVANCE_TIME_HOURS = 24; 
@@ -24,23 +24,34 @@ const startNotificationScheduler = () => {
             if (eventsToNotify.length > 0) {
                 console.log(`[ALERTA] Encontrados ${eventsToNotify.length} eventos para notificar!`);
                 
-                // 🚀 Otimização: Mapeia e executa todas as tarefas de notificação em paralelo 🚀
                 const notificationPromises = eventsToNotify.map(async (event) => {
+                    // ✅ 1. CORREÇÃO ID: Usa event.userId para obter o ID de ligação
+                    const userIdToFind = event.userId; 
+                    
                     // Busca o usuário associado para obter o e-mail
-                    const user = await User.findById(event.user).select('email name'); 
+                    const user = await User.findById(userIdToFind).select('email name'); 
                     
                     if (user && user.email) {
                         // 1. Chama o serviço REAL de envio de e-mail
                         await sendEventNotificationEmail(user, event);
 
                         // 2. Marca o evento como notificado (para evitar reenvio)
-                        await Event.findByIdAndUpdate(event._id, { notificationSent: true });
+                        // 💡 CORREÇÃO VALIDAÇÃO: Força a inclusão do userId e usa a opção 'runValidators: false'
+                        await Event.findByIdAndUpdate(
+                            event._id, 
+                            { 
+                                notificationSent: true,
+                                userId: event.userId // Garante que o campo obrigatório esteja presente
+                            }, 
+                            { new: true, runValidators: false } // Desativa validadores para este update simples
+                        );
                     } else {
-                        console.warn(`[AVISO] Não foi possível notificar evento ${event.title}: Usuário ou e-mail faltando (ID: ${event.userId}).`);
+                        // Avisa qual evento falhou
+                        console.warn(`[AVISO] Não foi possível notificar evento ${event.title}: Usuário ou e-mail faltando (ID do Evento: ${event._id}).`);
                     }
                 });
 
-                // Espera por todas as operações em paralelo (resolve o missed execution)
+                // Espera por todas as operações em paralelo
                 await Promise.all(notificationPromises); 
                 console.log(`[SUCESSO] Notificação e marcação de ${eventsToNotify.length} eventos concluída em paralelo.`);
                 

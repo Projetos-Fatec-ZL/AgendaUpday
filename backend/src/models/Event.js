@@ -39,6 +39,18 @@ const EventSchema = new mongoose.Schema({
         default: false, // Indica se o lembrete já foi enviado.
     },
 
+    // NOVOS CAMPOS PARA O STATUS DE CONCLUSÃO
+    isCompleted: {
+        type: Boolean,
+        default: false, // Por padrão, o evento não está concluído
+        index: true, 
+    },
+    completedAt: {
+        type: Date,
+        default: null, // Será preenchido apenas quando isCompleted for true
+    },
+    // FIM DOS NOVOS CAMPOS
+    
     // 4. Metadados
     createdAt: {
         type: Date,

@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     mensagem.style.color = "lightgreen";
                     
                     // Redireciona para a próxima página do aplicativo
-                    setTimeout(() => { window.location.href = 'calendario.html'; }, 500); 
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 500); 
 
                 } else {
                     // Credenciais inválidas (400 Bad Request)

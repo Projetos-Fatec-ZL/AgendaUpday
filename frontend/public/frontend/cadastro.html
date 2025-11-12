@@ -9,58 +9,134 @@
 <body>
 
   <main class="container">
-
-    <!-- Lado esquerdo -->
-    <section class="left">
-      <h1>Organize sua vida de <span>estudante</span></h1>
-      <p>
-        Planeje provas, organize horários de estudo, cuide do seu bem-estar e conquiste seus objetivos acadêmicos com a <strong>AgendaUpday</strong>.
-      </p>
-
-      <div class="features">
-        <div class="feature">
-          <h3>📘 Agenda Inteligente</h3>
-          <p>Gerencie provas, trabalhos e estudos</p>
-        </div>
-        <div class="feature">
-          <h3>🗓️ Planejamento</h3>
-          <p>Organize seus horários de estudo</p>
-        </div>
-        <div class="feature">
-          <h3>💆‍♀️ Bem-estar</h3>
-          <p>Controle sono e exercícios</p>
-        </div>
-        <div class="feature">
-          <h3>🔔 Lembretes</h3>
-          <p>Notificações por e-mail e web</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Lado direito -->
-    <section class="right">
-      <h2>Criar Conta</h2>
-      <p>Comece a organizar seus estudos</p>
-
-      <form id="cadastroForm">
-        <label for="nome">Nome</label>
-        <input type="text" id="nome" placeholder="Seu nome" required>
-
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="Digite seu email.." required>
-
-        <label for="senha">Senha</label>
-        <input type="password" id="senha" placeholder="••••••••" required>
-
-        <button type="submit">Criar Conta</button>
-
-        <p class="login-text">Já tem conta? <a href="login.html">Entre</a></p>
-      </form>
-
-      <p id="mensagem"></p>
-    </section>
-
-  </main>
+       
+        <!-- Lado esquerdo -->
+        <section class="left">
+           
+            <button class="carousel-arrow left-arrow" id="prevSlide">
+                &#10094; </button>
+           
+            <div class="carousel-slides" id="carouselSlides">
+               
+                <div class="carousel-slide-content">
+                    <h1>Organize sua vida de <span>estudante</span></h1>
+                    <p>
+                        Planeje provas, organize horários de estudo, cuide do seu bem-estar e conquiste seus objetivos acadêmicos com a <strong>AgendaUpday</strong>.
+                    </p>
+           
+                    <div class="features">
+                        <div class="feature">
+                            <h3>📘 Agenda Inteligente</h3>
+                            <p>Gerencie provas, trabalhos e estudos</p>
+                        </div>
+                        <div class="feature">
+                            <h3>🗓️ Planejamento</h3>
+                            <p>Organize seus horários de estudo</p>
+                        </div>
+                        <div class="feature">
+                            <h3>💆‍♀️ Bem-estar</h3>
+                            <p>Controle sono e exercícios</p>
+                        </div>
+                        <div class="feature">
+                            <h3>🔔 Lembretes</h3>
+                            <p>Notificações por e-mail e web</p>
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="carousel-slide-content generic-bg-1">
+                     </div>
+               
+                <div class="carousel-slide-content generic-bg-2">
+                    </div>
+ 
+            </div>
+           
+            <button class="carousel-arrow right-arrow" id="nextSlide">
+                &#10095; </button>
+           
+            <div class="carousel-dots" id="carouselDots">
+                <span class="dot active" data-slide="0"></span>
+                <span class="dot" data-slide="1"></span>
+                <span class="dot" data-slide="2"></span>
+            </div>
+           
+        </section>
+ 
+        <!-- Lado direito -->
+        <section class="right">
+            <h2>Criar Conta</h2>
+            <p>Comece a organizar seus estudos</p>
+ 
+            <form id="cadastroForm">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" placeholder="Seu nome" required>
+ 
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Digite seu email.." required>
+ 
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" placeholder="••••••••" required>
+ 
+                <button type="submit">Criar Conta</button>
+ 
+                <p class="login-text">Já tem conta? <a href="login.html">Entre</a></p>
+            </form>
+ 
+            <p id="mensagem"></p>
+        </section>
+ 
+    </main>
+   
+    <script>
+        const slidesContainer = document.getElementById('carouselSlides');
+        const dotsContainer = document.getElementById('carouselDots');
+        const dots = dotsContainer.querySelectorAll('.dot');
+        const prevButton = document.getElementById('prevSlide');
+        const nextButton = document.getElementById('nextSlide');
+       
+        const totalSlides = dots.length;
+        let currentSlide = 0;
+ 
+        function updateCarousel() {  
+            slidesContainer.style.transform = `translateX(-${currentSlide * (100 / totalSlides)}%)`;
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+ 
+        function goToSlide(index) {
+            if (index < 0) {
+                currentSlide = totalSlides - 1;
+            } else if (index >= totalSlides) {
+                currentSlide = 0;
+            } else {
+                currentSlide = index;
+            }
+            updateCarousel();
+        }
+ 
+        prevButton.addEventListener('click', () => {
+            goToSlide(currentSlide - 1);
+        });
+ 
+        nextButton.addEventListener('click', () => {
+            goToSlide(currentSlide + 1);
+        });
+ 
+        dotsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('dot')) {
+                const slideIndex = parseInt(e.target.dataset.slide);
+                goToSlide(slideIndex);
+            }
+        });
+ 
+        setInterval(() => {
+            goToSlide(currentSlide + 1);
+        }, 10000);
+ 
+        updateCarousel();
+    </script>
 
 <script src="../javascript/auth.js"></script>
 </body>
