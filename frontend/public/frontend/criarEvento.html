@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Novo Evento</title>
+   <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+ 
+  <div class="event-modal">
+ 
+    <div class="modal-header">
+        <div class="modal-title-row">
+            <h2>Criar Novo Evento</h2>
+            <button class="close-btn" onclick="this.closest('.event-modal').remove()">×</button>
+        </div>
+        <p>Adicione um novo evento à sua agenda</p>
+    </div>
+ 
+    <form id="createEventForm">
+ 
+      <div class="form-group">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" class="input-title" required>
+      </div>
+ 
+      <div class="form-group">
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao"></textarea>
+      </div>
+ 
+      <div class="row-fields">
+        <div class="form-group">
+          <label for="tipo">Tipo</label>
+          <select id="tipo" required>
+            <option value="estudo" selected>Sessão de Estudo</option>
+            <option value="prova">Prova</option>
+            <option value="trabalho">Trabalho</option>
+            <option value="sono">Sono</option>
+            <option value="exercicio">Exercício</option>
+            <option value="evento">Evento</option>
+          </select>
+        </div>
+ 
+        <div class="form-group">
+          <label for="prioridade">Prioridade</label>
+          <select id="prioridade" required>
+            <option value="alta">Alta</option>
+            <option value="media" selected>Média</option>
+            <option value="baixa">Baixa</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="row-fields">
+        <div class="form-group">
+          <label for="dataHora">Data e Hora</label>
+          <div class="date-time-input-group">
+            <input type="datetime-local" id="dataHora" placeholder="dd/mm/aaaa --:--" required>
+          </div>
+        </div>
+ 
+        <div class="form-group">
+          <label for="duracao">Duração (minutos)</label>
+          <input type="number" id="duracao" value="60" min="5" required>
+        </div>
+      </div>
+ 
+      <button type="submit" class="create-event-btn">Criar Evento</button>
+ 
+    </form>
+  </div>
+ 
+</body>
+</html>

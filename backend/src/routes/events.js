@@ -54,8 +54,54 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
+// =======================================================
+// @route   PUT /api/events/:id/toggle-completed
+// @desc    Alterna o status de conclusão (isCompleted) de um evento.
+// @access  Privado (Requer Token JWT e propriedade do evento)
+// =======================================================
+router.put('/:id/toggle-completed', auth, async (req, res) => {
+    try {
+        const eventId = req.params.id;
+        const userId = req.user.id; // O ID do usuário logado do JWT
+        
+        // 1. Buscar o evento para verificar o status atual e garantir que pertence ao usuário
+        const event = await Event.findOne({ _id: eventId, userId: userId });
+
+        if (!event) {
+            return res.status(404).json({ msg: 'Evento não encontrado ou não pertence a este usuário.' });
+        }
+        
+        // 2. Alternar o status e definir a data de conclusão
+        const newStatus = !event.isCompleted;
+        // Preenche a data se concluído (true), ou limpa (null) se reaberto (false)
+        const completedAt = newStatus ? new Date() : null; 
+        
+        // 3. Atualizar o evento no banco de dados
+        const updatedEvent = await Event.findByIdAndUpdate(
+            eventId,
+            { 
+                isCompleted: newStatus,
+                completedAt: completedAt,
+            },
+            { new: true } // Retorna o documento atualizado
+        );
+
+        // 4. Retorna o evento atualizado para o frontend
+        res.json(updatedEvent);
+
+    } catch (err) {
+        console.error('Erro ao alternar status do evento:', err.message);
+        // Em caso de ID mal formatado
+        if (err.kind === 'ObjectId') {
+            return res.status(400).json({ msg: 'ID de evento inválido.' });
+        }
+        res.status(500).send('Erro no servidor');
+    }
+});
+
+
 // @route   PUT /api/events/:id
-// @desc    Atualiza um evento existente pelo ID
+// @desc    Atualiza um evento existente pelo ID (para edição de detalhes)
 // @access  Privado (Requer Token JWT e propriedade do evento)
 router.put('/:id', auth, async (req, res) => {
     try {
@@ -124,6 +170,5 @@ router.delete('/:id', auth, async (req, res) => {
     }
 });
 
-// Implementaremos as rotas GET, PUT e DELETE em seguida.
 
 module.exports = router;

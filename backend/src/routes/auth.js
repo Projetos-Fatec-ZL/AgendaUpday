@@ -1,39 +1,46 @@
+// =======================================================
+// DEPENDÊNCIAS (Imports)
+// Mantenha todos os 'requires' no topo para Clean Code.
+// =======================================================
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs'); // Importa a biblioteca de criptografia
-const User = require('../models/User'); // Importa o modelo User
 
+const bcrypt = require('bcryptjs'); 
+const jwt = require('jsonwebtoken'); 
+
+// Modelos e Middlewares
+const User = require('../models/User'); 
+const auth = require('../middleware/auth'); // Middleware de autenticação
+
+// =======================================================
 // ROTA: POST /api/auth/register (Cadastro de Usuário)
+// Status 201: Criado
+// =======================================================
 router.post('/register', async (req, res) => {
-    // 1. Desestruturar os dados do corpo da requisição
     const { nome, email, senha } = req.body;
 
     try {
-        // 2. Verificar se o usuário já existe
+        // 1. Verificar se o usuário já existe
         let user = await User.findOne({ email });
 
         if (user) {
             return res.status(400).json({ msg: 'Usuário já existe.' });
         }
 
-        // 3. Criar uma nova instância do usuário (sem salvar ainda)
+        // 2. Criar nova instância
         user = new User({
-            name: nome,
-            email: email,
+            name: nome, // Garanta que seu modelo User tem o campo 'name'
+            email,
             password: senha
         });
 
-        // 4. Gerar um salt e fazer o hash da senha
-        // O salt é o fator de segurança para a criptografia.
+        // 3. Hash da senha
         const salt = await bcrypt.genSalt(10);
-        
-        // 5. A senha criptografada será salva no banco (conforme artefato 1)
         user.password = await bcrypt.hash(senha, salt);
 
-        // 6. Salvar o usuário no MongoDB
+        // 4. Salvar o usuário
         await user.save();
 
-        // 7. Resposta de Sucesso
         res.status(201).json({ 
             msg: 'Usuário registrado com sucesso!', 
             userId: user._id 
@@ -45,49 +52,65 @@ router.post('/register', async (req, res) => {
     }
 });
 
-const jwt = require('jsonwebtoken'); // Importa o JWT
-
+// =======================================================
 // ROTA: POST /api/auth/login (Login de Usuário)
+// Status 200: Sucesso (Retorna JWT)
+// =======================================================
 router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
 
     try {
-        // 1. Verificar se o usuário existe
-        // Usa .select('+password') para trazer o campo password (que definimos como select: false no modelo)
+        // 1. Verificar usuário e buscar a senha
+        // .select('+password') é crucial aqui.
         let user = await User.findOne({ email }).select('+password');
 
         if (!user) {
-            // 400 Bad Request, informando que as credenciais são inválidas
             return res.status(400).json({ msg: 'Credenciais inválidas.' });
         }
 
-        // 2. Comparar a senha fornecida com o hash armazenado
-        // bcrypt.compare() faz o hashing da senha digitada e compara com o hash salvo
+        // 2. Comparar a senha
         const isMatch = await bcrypt.compare(senha, user.password);
 
         if (!isMatch) {
             return res.status(400).json({ msg: 'Credenciais inválidas.' });
         }
 
-        // 3. Se a senha for válida, gerar o JWT
+        // 3. Gerar o JWT
         const payload = {
             user: {
-                id: user.id // Payload que será incluído no token
+                id: user.id 
             }
         };
         
-        // Assina o token com a chave secreta e define um tempo de expiração (ex: 1 hora)
+        // Assina o token e retorna
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
-            { expiresIn: '1h' },
+            { expiresIn: '1h' }, // Expiração em 1 hora
             (err, token) => {
                 if (err) throw err;
-                // 4. Resposta de Sucesso: Retorna o token para o cliente
                 res.json({ token }); 
             }
         );
 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Erro no Servidor');
+    }
+});
+
+
+// =======================================================
+// ROTA: GET /api/auth (Obter dados do usuário logado)
+// Status 200: Sucesso (Retorna objeto do Usuário)
+// =======================================================
+router.get('/', auth, async (req, res) => {
+    try {
+        // req.user.id é obtido do Token JWT validado pelo middleware 'auth'
+        const user = await User.findById(req.user.id).select('-password'); 
+        
+        // Esta rota fornece o objeto que o Front-end (fetchUserName) usa para exibir o nome.
+        res.json(user); 
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Erro no Servidor');
