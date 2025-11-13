@@ -21,6 +21,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const settingsBtn = document.getElementById('settings-btn');
     const settingsModal = document.getElementById('settings-modal');
     const closeSettingsModalBtn = document.getElementById('close-settings-modal-btn');
+    const decreaseFontBtn = document.getElementById('font-size-decrease');
+    const increaseFontBtn = document.getElementById('font-size-increase');
+
+    // Variáveis de Acessibilidade
+    const FONT_STORAGE_KEY = 'fontSizeAdjustmentFactor';
+    // Define o "passo" de ajuste (1.1 = 10% por clique)
+    const ADJUSTMENT_STEP = 1.1;
     
     // Abrir Modal de Configurações
     if (settingsBtn) {
@@ -482,6 +489,51 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 // --- FIM: Dark Mode ---
+
+// --- Funções de Acessibilidade de Fonte ---
+
+    // Função 1: Aplica o fator de escala na raiz (<html>) e Salva
+    function applyFontSize(factor) {
+        document.documentElement.style.fontSize = `${factor * 100}%`; 
+        localStorage.setItem(FONT_STORAGE_KEY, factor.toString());
+    }
+
+    // Função 2: Carrega o fator salvo ao iniciar a página
+    function loadSavedFontSize() {
+        let savedFactor = localStorage.getItem(FONT_STORAGE_KEY);
+        if (savedFactor) {
+            applyFontSize(parseFloat(savedFactor));
+        } else {
+            applyFontSize(1.0); // Padrão 100%
+        }
+    }
+    // --- Inicialização da Dashboard ---
+
+    loadSavedFontSize(); // ✅ Carrega o tamanho salvo ao iniciar a página
+
+    // ✅ Listeners para Aumentar e Diminuir
+    if (decreaseFontBtn && increaseFontBtn) {
+        
+        // Listener para DIMINUIR
+        decreaseFontBtn.addEventListener('click', () => {
+            let currentFactor = parseFloat(localStorage.getItem(FONT_STORAGE_KEY)) || 1.0;
+            
+            // Diminui 10%, com limite mínimo de 80% (0.8)
+            let newFactor = Math.max(0.8, currentFactor / ADJUSTMENT_STEP);
+            
+            applyFontSize(newFactor);
+        });
+
+        // Listener para AUMENTAR
+        increaseFontBtn.addEventListener('click', () => {
+            let currentFactor = parseFloat(localStorage.getItem(FONT_STORAGE_KEY)) || 1.0;
+
+            // Aumenta 10%, com limite máximo de 130% (1.3)
+            let newFactor = Math.min(1.3, currentFactor * ADJUSTMENT_STEP);
+
+            applyFontSize(newFactor);
+        });
+    }
 
     // --- Inicialização da Dashboard ---
     fetchUserName(); 

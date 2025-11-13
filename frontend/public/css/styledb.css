@@ -20,6 +20,10 @@ body {
     margin: 0;
 }
 
+html {
+  font-size: 100%; /* equivale a 16px */
+}
+
 .container {
     max-width: 1200px;
     margin: 20px auto;
@@ -162,6 +166,22 @@ body {
 .dark-mode {
     background-color: var(--bg-light);
 }
+/* Garante que os ícones de Ação (Editar, Deletar) fiquem brancos no Dark Mode */
+.dark-mode .action-btn {
+    color: var(--text-dark); 
+    opacity: 1; 
+}
+
+.dark-mode .edit-btn:hover {
+    color: var(--primary-blue);
+    opacity: 1;
+}
+
+.dark-mode .delete-btn:hover {
+    color: #e74c3c; /* Vermelho */
+    opacity: 1;
+}
+
 /*Ajustes no modal de config */
 .setting-row {
     display: flex;
@@ -173,8 +193,62 @@ body {
     
     border-bottom: 1px solid var(--border-color);
 }
-/* --- Estilos para o Toggle Switch (ON/OFF) --- */
+/* Estilos para o container dos botões de fonte (o <div class="font-buttons">) */
+.font-buttons {
+    display: flex;
+    gap: 8px; /* Espaçamento entre os botões */
+    align-items: center;
+}
 
+/* Estilo Base dos Botões Individuais (A A) */
+.icon-btn-small { /* Você já deve ter este seletor, ajuste-o ou adicione estas propriedades */
+    background-color: var(--bg-light); /* Cor de fundo clara */
+    border: 1px solid var(--border-color); /* Borda sutil */
+    border-radius: 4px; /* Cantos levemente arredondados */
+    width: 40px; /* Largura do botão */
+    height: 40px; /* Altura do botão */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-dark); /* Cor do texto/ícone padrão */
+    font-size: 1rem; /* Tamanho da fonte interna */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0; /* Impede que os botões diminuam */
+}
+
+/* Tamanho de Fonte para o texto "A" dentro dos botões */
+.icon-btn-small .fas.fa-font {
+    font-size: 0.9rem; /* Tamanho do ícone 'A' normal */
+}
+.icon-btn-small:last-child .fas.fa-font {
+    font-size: 1.1rem; /* O segundo 'A' (maior) fica um pouco maior */
+}
+
+/* Efeito de Hover para os botões */
+.icon-btn-small:hover {
+    background-color: var(--primary-blue); /* Fundo azul no hover */
+    border-color: var(--primary-blue);
+    color: white; /* Texto branco no hover */
+    transform: translateY(-2px); /* Efeito de leve levantamento */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para o Dark Mode */
+.dark-mode .icon-btn-small {
+    background-color: var(--dm-bg-card); /* Fundo escuro */
+    border-color: var(--dm-border-color);
+    color: var(--dm-text-dark); /* Texto branco */
+}
+
+.dark-mode .icon-btn-small:hover {
+    background-color: var(--primary-blue); /* Continua azul no hover */
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+/* --- Estilos para o Toggle Switch (ON/OFF) --- */
 .toggle-switch {
     position: relative;
     display: inline-block;
@@ -574,6 +648,7 @@ display: flex;
     align-items: center;
     font-size: 1.2rem;
     flex-shrink: 0;
+    margin-right: 15px;
 }
 
 /* Estilos de ícone (Completo vs. Pendente) */
@@ -584,6 +659,7 @@ display: flex;
 .event-icon.pending {
     background-color: #007bff; /* Azul */
     color: white;
+   
 }
 
 .event-details {

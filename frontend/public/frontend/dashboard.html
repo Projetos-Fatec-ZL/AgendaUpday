@@ -92,14 +92,14 @@
             <div class="row-fields">
                 <div class="form-group">
                     <label for="tipo">Tipo</label>
-                    <select id="tipo" required>
-                        <option value="estudo" selected>Estudo</option>
-                        <option value="prova">Prova</option>
-                        <option value="trabalho">Trabalho</option>
-                        <option value="sono">Sono</option>
-                        <option value="exercicio">Exercício</option>
-                        <option value="evento">Evento</option>
-                    </select>
+                   <select id="tipo" required>
+     <option value="estudo" selected><span aria-hidden="true">📚</span> Estudo</option>
+     <option value="prova"><span aria-hidden="true">📝</span> Prova</option>
+     <option value="trabalho"><span aria-hidden="true">💻</span> Trabalho</option>
+     <option value="sono"><span aria-hidden="true">🌙</span> Sono</option>
+     <option value="exercicio"><span aria-hidden="true">🏃‍♂️</span> Exercício</option>
+     <option value="evento"><span aria-hidden="true">🎉</span> Evento</option>
+                </select>
                 </div>
 
                 <div class="form-group">
@@ -171,7 +171,22 @@
         </div>
 
         <div class="modal-body">
-            
+            <!--Controles de Tamanho de Fonte -->
+<div class="font-controls-row setting-row">
+    <label>Tamanho da Fonte</label>
+    <div class="font-buttons">
+        <!-- Botão para Diminuir Fonte -->
+        <button id="font-size-decrease" class="icon-btn-small" aria-label="Diminuir Fonte">
+            <i class="fas fa-font"></i>
+            <span class="sr-only">-</span>
+        </button>
+        <!-- Botão para Aumentar Fonte -->
+        <button id="font-size-increase" class="icon-btn-small" aria-label="Aumentar Fonte">
+            <i class="fas fa-font"></i>
+            <span class="sr-only">+</span>
+        </button>
+    </div>
+</div>
             <div class="setting-row">
                 <label for="email-notifications">Deseja receber notificações por Email?</label>
                 <label class="toggle-switch">
