@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> AgendaUpday </title>
     <link rel="stylesheet" href="../css/styledb.css">
-    <!-- Adicione o Font Awesome para que os ícones (fas) funcionem -->
+    <!-- Font Awesome é CRÍTICO para os ícones, incluindo os novos botões de tema/config -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -18,6 +18,17 @@
                 <span class="greeting">Olá, UserName!</span> </div>
         </div>
         <div class="user-menu">
+            <!-- NOVO: Grupo de Botões para Configurações e Tema -->
+            <div class="icon-buttons-group">
+                <button id="settings-btn" class="icon-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+
+                <button id="theme-toggle-btn" class="icon-btn">
+                    <i class="fas fa-moon"></i> 
+                </button>
+            </div>
+            <!-- FIM DO NOVO GRUPO -->
             <button id="logout-btn" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Sair
             </button>
@@ -85,12 +96,11 @@
         </div>
     </div>
 
-    <!-- 2. MODAL DE CRIAÇÃO/EDIÇÃO DE EVENTO -->
+    <!-- 2. MODAL DE CRIAÇÃO/EDIÇÃO DE EVENTO (DA SUA VERSÃO) -->
     <div id="novoEventoModal" class="modal-backdrop" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title-row">
-                    <!-- Este título será atualizado pelo JS se for um modo de edição -->
                     <h2>Criar Novo Evento</h2>
                     <button id="btnFecharModal" class="close-btn">×</button>
                 </div>
@@ -113,12 +123,12 @@
                     <div class="form-group">
                         <label for="tipo">Tipo</label>
                         <select id="tipo" required>
-                            <option value="estudo" selected>Estudo</option>
-                            <option value="prova">Prova</option>
-                            <option value="trabalho">Trabalho</option>
-                            <option value="sono">Sono</option>
-                            <option value="exercicio">Exercício</option>
-                            <option value="evento">Evento</option>
+                            <option value="estudo" selected><span aria-hidden="true">📚</span> Estudo</option>
+                            <option value="prova"><span aria-hidden="true">📝</span> Prova</option>
+                            <option value="trabalho"><span aria-hidden="true">💻</span> Trabalho</option>
+                            <option value="sono"><span aria-hidden="true">🌙</span> Sono</option>
+                            <option value="exercicio"><span aria-hidden="true">🏃‍♂️</span> Exercício</option>
+                            <option value="evento"><span aria-hidden="true">🎉</span> Evento</option>
                         </select>
                     </div>
 
@@ -136,9 +146,7 @@
                     <div class="form-group">
                         <label for="dataHora">Data e Hora</label>
                         <div class="date-time-input-group">
-                            <!-- CORREÇÃO CRÍTICA: id="dataHora" agora está correto para o JS coletar o valor -->
                             <input type="datetime-local" id="dataHora" placeholder="dd/mm/aaaa --:--" required>
-                            <!--<span class="calendar-icon">📅</span>-->
                         </div>
                     </div>
 
@@ -150,6 +158,74 @@
 
                 <button type="submit" class="create-event-btn">Criar Evento</button>
             </form>
+        </div>
+    </div>
+
+    <!-- 3. NOVO MODAL DE CONFIGURAÇÕES (TEMA E NOTIFICAÇÕES) -->
+    <div id="settings-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-content">
+            
+            <div class="modal-header">
+                <div class="modal-header-text">
+                    <h2>Configurações</h2>
+                    <p>Gerencie suas preferências de notificação e tema.</p>
+                </div>
+                <button id="close-settings-modal-btn" class="close-btn">&times;</button>
+            </div>
+
+            <div class="modal-body">
+
+                <!--Controles de Tamanho de Fonte -->
+                <div class="font-controls-row setting-row">
+                    <label>Tamanho da Fonte</label>
+                    <div class="font-buttons">
+                        <!-- Botão para Diminuir Fonte -->
+                        <button id="font-size-decrease" class="icon-btn-small" aria-label="Diminuir Fonte">
+                            <i class="fas fa-font"></i>
+                            <span class="sr-only">-</span>
+                        </button>
+                        <!-- Botão para Aumentar Fonte -->
+                        <button id="font-size-increase" class="icon-btn-small" aria-label="Aumentar Fonte">
+                            <i class="fas fa-font"></i>
+                            <span class="sr-only">+</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="theme-setting">Alternar Tema (Claro/Escuro)</label>
+                    <!-- O JavaScript vai manipular este botão (theme-toggle-btn) e a classe do body -->
+                    <button id="theme-toggle-modal-btn" class="toggle-switch-btn icon-btn">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                </div>
+
+                <div class="setting-row">
+                    <label for="high-contrast-switch">Modo de Alto Contraste</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="high-contrast-switch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Notificações -->
+                <div class="setting-row">
+                    <label for="email-notifications">Deseja receber notificações por Email?</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="email-notifications" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <label for="telegram-notifications">Deseja receber notificações por Telegram?</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="telegram-notifications">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+            </div>
         </div>
     </div>
 
