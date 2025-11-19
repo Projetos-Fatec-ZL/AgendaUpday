@@ -11,13 +11,97 @@
     --card-blue: #2965e6;
     --card-green: #26b75d;
     --card-purple: #9822ca;
+
+    /* Cores Dark Mode (fallback) */
+    --dm-text-dark: #ffffff;
+    --dm-text-light: #bbb;
+    --dm-bg-light: #121212; /* Fundo da página (Escuro) */
+    --dm-bg-white: #1e1e1e; /* Fundo dos cards/modals (Escuro) */
+    --dm-border-color: #333333;
 }
+
+/* ---------------------------------- */
+/* DARK MODE (Lógica)        */
+/* ---------------------------------- */
+
+/* Aplica o tema escuro quando a classe .dark-mode está no body */
+.dark-mode {
+    --text-dark: var(--dm-text-dark);
+    --text-light: var(--dm-text-light);
+    --bg-light: var(--dm-bg-light);
+    --bg-white: var(--dm-bg-white);
+    --border-color: var(--dm-border-color);
+    background-color: var(--bg-light);
+}
+
+/* Garante que os ícones de Ação (Editar, Deletar) fiquem brancos no Dark Mode */
+.dark-mode .action-btn {
+    color: var(--text-dark); 
+    opacity: 1; 
+}
+
+.dark-mode .edit-btn:hover {
+    color: var(--primary-blue);
+    opacity: 1;
+}
+
+.dark-mode .delete-btn:hover {
+    color: #e74c3c; /* Vermelho */
+    opacity: 1;
+}
+
+/* Garante que elementos de card/container mudem para o fundo escuro */
+.dark-mode body,
+.dark-mode .main-header,
+.dark-mode .event-list-container,
+.dark-mode .upcoming-events-container,
+.dark-mode .modal-content {
+    background-color: var(--bg-white);
+    color: var(--text-dark);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.dark-mode .event-item {
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+}
+
+
+/* Estiliza Inputs, Textareas e Selects no Dark Mode */
+.dark-mode .form-group input,
+.dark-mode .form-group textarea,
+.dark-mode .form-group select {
+    background-color: var(--dm-bg-white);
+    color: var(--dm-text-dark);
+    border: 1px solid var(--dm-border-color);
+}
+.dark-mode .form-group label {
+    color: var(--text-dark);
+}
+.dark-mode .date-time-input-group {
+    border: 1px solid var(--dm-border-color);
+    background-color: var(--dm-bg-white);
+}
+.dark-mode .modal-header p {
+    color: var(--dm-text-light); 
+}
+.dark-mode .add-btn {
+    background-color: var(--dark-blue-btn); 
+    color: var(--dm-text-dark); 
+}
+
+/* ---------------------------------- */
+/* ESTILOS GERAIS           */
+/* ---------------------------------- */
 
 body {
     font-family: Arial, sans-serif;
     background-color: var(--bg-light);
     color: var(--text-dark);
     margin: 0;
+}
+
+html {
+  font-size: 100%; /* equivale a 16px */
 }
 
 .container {
@@ -53,6 +137,53 @@ body {
     gap: 20px;
 }
 
+/* --- Novos Estilos de Header: Botões de Ícone (Dark/Config) --- */
+
+.icon-buttons-group {
+    display: flex;
+    gap: 10px; 
+    align-items: center;
+}
+
+.icon-btn {
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.icon-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Dark Mode para os botões de ícone */
+.dark-mode .icon-btn {
+    background: #333;
+    border-color: #555;
+    color: var(--dm-text-light);
+}
+.dark-mode .icon-btn:hover {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+
 /* Botão Sair */
 .logout-btn {
     background-color: var(--text-light);
@@ -75,7 +206,10 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Cards */
+/* ---------------------------------- */
+/* CARDS                */
+/* ---------------------------------- */
+
 .stats-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -115,13 +249,17 @@ body {
     font-weight: bold;
 }
 
+/* ---------------------------------- */
+/* ÁREA DE CONTEÚDO        */
+/* ---------------------------------- */
+
 .content-area {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 30px;
 }
 
-/* Coluna da Esquerda */
+/* Coluna da Esquerda e Direita (Containers) */
 .event-list-container,
 .upcoming-events-container {
     background-color: var(--bg-white);
@@ -164,149 +302,17 @@ h2 {
     transform: scale(1.05); /* Efeito de 'crescer' */
     box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
 }
-.modal-backdrop {
-    display: none; 
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    justify-content: center;
-    align-items: center;
-}
 
-.modal-content {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px; /* Limite de largura no desktop */
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-/* estilo do formulario*/
-.form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
+/* ---------------------------------- */
+/* LISTA DE EVENTOS         */
+/* ---------------------------------- */
 
-.form-group label {
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-    font-size: 0.9rem;
-    color: #333;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    box-sizing: border-box; /* Garante que o padding não "estoure" a largura */
-}
-
-.modal-header {
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 1rem;
-}
-
-.modal-header h2 {
-    margin: 0;
-}
-.modal-header p {
-    margin: 0.25rem 0 0;
-    color: #666;
-}
-
-.modal-title-row {
-    
-display: flex;
-    justify-content: space-between; 
-    align-items: flex-start;      
-    width: 100%;              
-}
-
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 2.5rem; 
-    cursor: pointer;
-    line-height: 1;
-    color: #aaa;
-    padding: 0;
-    margin: 0; 
-    line-height: 1; 
-}
-
-.close-btn:hover {
-    color: #333;
-}
-
-.date-time-input-group {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.date-time-input-group input {
-    border: none;
-    flex-grow: 1;
-}
-.calendar-icon {
-    padding: 0 0.8rem;
-    color: #666;
-}
-
-.create-event-btn {
-    width: 100%;
-    padding: 1rem;
-    background-color: #28a745; /* Cor de exemplo (Verde) */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    margin-top: 1rem;
-}
-.create-event-btn:hover {
-    background-color: #218838;
-}
-/*RESPONSIVIDADE*/
-.row-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 1rem; 
-}
-/*  MOBILE telas com 768px ou menos */
-@media (max-width: 768px) {
-    
-    .modal-content {
-        width: 95%;
-        padding: 1.5rem;
-    }
-    .row-fields {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Lista de Eventos */
 .event-list {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-/* NOVO ESTILO: Garante que os botões fiquem alinhados à direita */
 .event-item {
     display: flex;
     justify-content: space-between; /* Detalhes à esquerda, Ações à direita */
@@ -315,15 +321,13 @@ display: flex;
     padding: 15px;
     background-color: var(--bg-light);
     border-radius: 8px;
-    /* Adicione esta borda se você a tinha antes */
     border: 1px solid var(--border-color); 
 }
 
 /* Estilo do container de botões (Ações) */
 .event-actions {
     display: flex;
-    gap: 10px; /* Espaço entre o botão de editar e o de excluir */
-    /* Garante que os botões não sejam espremidos se o título for muito longo */
+    gap: 10px; 
     flex-shrink: 0; 
     margin-left: 15px; 
 }
@@ -334,20 +338,19 @@ display: flex;
     border: none;
     cursor: pointer;
     padding: 5px;
-    font-size: 1.1rem; /* Aumenta um pouco o ícone */
-    color: var(--text-light); /* Cor neutra */
+    font-size: 1.1rem;
+    color: var(--text-light); 
     transition: color 0.2s ease;
 }
 
 .edit-btn:hover {
-    color: var(--primary-blue); /* Azul no hover */
+    color: var(--primary-blue);
 }
 
 .delete-btn:hover {
-    color: #e74c3c; /* Vermelho no hover */
+    color: #e74c3c;
 }
 
-/* Garante que os detalhes principais ocupem o espaço necessário */
 .event-details-main {
     display: flex;
     align-items: center;
@@ -363,15 +366,16 @@ display: flex;
     align-items: center;
     font-size: 1.2rem;
     flex-shrink: 0;
+    margin-right: 15px; /* Adiciona espaço para o ícone */
 }
 
 /* Estilos de ícone (Completo vs. Pendente) */
 .event-icon.completed {
-    background-color: #28a745; /* Verde */
+    background-color: #28a745; 
     color: white;
 }
 .event-icon.pending {
-    background-color: #007bff; /* Azul */
+    background-color: #007bff;
     color: white;
 }
 
@@ -388,6 +392,11 @@ display: flex;
 .event-time {
     font-size: 0.9rem;
     color: var(--text-light);
+}
+
+.feito {
+    text-decoration: line-through;
+    opacity: 0.6;
 }
 
 /* Botão "Ver Todos os eventos" */
@@ -417,7 +426,10 @@ display: flex;
     margin-top: 20px;
 }
 
-/*Estilos do Modal*/
+/* ---------------------------------- */
+/* MODAIS               */
+/* ---------------------------------- */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -443,21 +455,51 @@ display: flex;
     overflow-y: auto;
     transform: scale(1);
     transition: transform 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+.modal-header p {
+    margin: 0.25rem 0 0;
+    color: var(--text-light);
+}
+
+.modal-title-row {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-start; 
+    width: 100%; 
 }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: 2rem;
-    color: var(--text-light);
+    font-size: 2.5rem; 
     cursor: pointer;
+    line-height: 1;
+    color: var(--text-light);
+    padding: 0;
+    margin: 0; 
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.close-btn:hover {
+    color: #e74c3c; 
+    transform: scale(1.1); 
+}
+.close-btn:active {
+    transform: scale(0.95);
 }
 
 .modal-overlay.hidden {
@@ -468,12 +510,199 @@ display: flex;
 .modal-overlay.hidden .modal-content {
     transform: scale(0.9);
 }
-.feito {
-  text-decoration: line-through;
-  opacity: 0.6;
+
+/* Estilos de Formulário */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
 }
-/*Esta regra só se aplicam em telas
-   com 768px de largura ou MENOS (tablets e celulares) */
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box; 
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.date-time-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.date-time-input-group input {
+    border: none;
+    flex-grow: 1;
+}
+.calendar-icon {
+    padding: 0 0.8rem;
+    color: var(--text-light);
+}
+
+.create-event-btn {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--card-green); /* Cor de exemplo (Verde) */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.create-event-btn:hover {
+    background-color: #218838;
+    transform: scale(1.03);
+}
+
+/* ---------------------------------- */
+/* MODAL CONFIGURAÇÕES        */
+/* ---------------------------------- */
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem; 
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Estilos para o container dos botões de fonte (o <div class="font-buttons">) */
+.font-buttons {
+    display: flex;
+    gap: 8px; /* Espaçamento entre os botões */
+    align-items: center;
+}
+
+/* Estilo Base dos Botões Individuais (A A) */
+.icon-btn-small { /* Você já deve ter este seletor, ajuste-o ou adicione estas propriedades */
+    background-color: var(--bg-light); /* Cor de fundo clara */
+    border: 1px solid var(--border-color); /* Borda sutil */
+    border-radius: 4px; /* Cantos levemente arredondados */
+    width: 40px; /* Largura do botão */
+    height: 40px; /* Altura do botão */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-dark); /* Cor do texto/ícone padrão */
+    font-size: 1rem; /* Tamanho da fonte interna */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0; /* Impede que os botões diminuam */
+}
+
+/* Tamanho de Fonte para o texto "A" dentro dos botões */
+.icon-btn-small .fas.fa-font {
+    font-size: 0.9rem; /* Tamanho do ícone 'A' normal */
+}
+.icon-btn-small:last-child .fas.fa-font {
+    font-size: 1.1rem; /* O segundo 'A' (maior) fica um pouco maior */
+}
+
+/* Efeito de Hover para os botões */
+.icon-btn-small:hover {
+    background-color: var(--primary-blue); /* Fundo azul no hover */
+    border-color: var(--primary-blue);
+    color: white; /* Texto branco no hover */
+    transform: translateY(-2px); /* Efeito de leve levantamento */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para o Dark Mode */
+.dark-mode .icon-btn-small {
+    background-color: var(--dm-bg-card); /* Fundo escuro */
+    border-color: var(--dm-border-color);
+    color: var(--dm-text-dark); /* Texto branco */
+}
+
+.dark-mode .icon-btn-small:hover {
+    background-color: var(--primary-blue); /* Continua azul no hover */
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+/* --- Estilos para o Toggle Switch (ON/OFF) --- */
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 55px;
+    height: 30px;
+    flex-shrink: 0;
+    margin-left: 15px; 
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* O "Trilho" do Switch */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e74c3c; /* OFF Padrão: Vermelho */
+    transition: .4s;
+    border-radius: 34px; 
+}
+/* O "Círculo" do Switch */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px; 
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white; 
+    transition: .4s;
+    border-radius: 50%; 
+}
+
+/* Quando o input está CHECADO (ON) */
+input:checked + .slider {
+    background-color: var(--card-green); /* ON: Verde */
+}
+
+input:checked + .slider:before {
+    transform: translateX(25px); 
+}
+
+/* Ajuste para OFF no Dark Mode */
+.dark-mode .toggle-switch .slider {
+    background-color: #880000; /* OFF Dark: Vermelho Escuro */
+}
+.dark-mode input:checked + .slider {
+    background-color: var(--card-green); 
+}
+
+
+/* ---------------------------------- */
+/* RESPONSIVIDADE            */
+/* ---------------------------------- */
+
 @media (max-width: 768px) {
     .main-header {
         flex-direction: column;
@@ -484,16 +713,21 @@ display: flex;
     .user-menu {
         width: 100%;
         flex-direction: column; 
-        align-items: stretch;   
-        gap: 10px;          
+        align-items: stretch; 
+        gap: 10px; /* CORRIGIDO: Ponto e vírgula adicionado */
+    }
+    
+    .icon-buttons-group {
+        width: 100%;
+        justify-content: flex-end;
     }
 
     .logout-btn {
-        width: 30%; 
+        width: 100%; /* Ajustei para 100% para ocupar a largura total no mobile */
         text-align: center; 
     }
 
-    /*Ajusta os Cards de Estatística*/
+    /* Ajusta os Cards de Estatística*/
     .stats-cards {
         grid-template-columns: 1fr;
     }
@@ -501,14 +735,132 @@ display: flex;
         grid-template-columns: 1fr;
     }
 
-    /*Ajusta o Modal do Formulário*/
-    .form-row {
+    /* Ajusta o Modal do Formulário*/
+    .row-fields {
         grid-template-columns: 1fr;
     }
     
     .modal-content {
-        /* Garante que o modal não seja maior que a tela */
         width: 90%;
         padding: 20px;
     }
+}
+
+/* Container do Modal que cobre toda a tela */
+#novoEventoModal, #settings-modal, #modal-overlay {
+    /* Garante que o modal fique por cima de tudo */
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* NOVO: Centraliza o conteúdo dentro do overlay (o modal em si) */
+    display: flex; /* Já definido no JS, mas bom ter aqui como padrão */
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    
+    /* Fundo semi-transparente */
+    background-color: rgba(0, 0, 0, 0.5); 
+    
+    /* Garante que fique escondido por padrão e tenha prioridade Z */
+    z-index: 1000; 
+    display: none; /* Mantém a visibilidade inicial no CSS */
+}
+
+/* ---------------------------------- */
+/* --- NOVO: ALTO CONTRASTE (ACESSIBILIDADE) --- */
+/* ---------------------------------- */
+
+/* Regras de Alto Contraste */
+body.high-contrast {
+    /* Fundo principal: Preto rígido */
+    background-color: #000 !important; 
+    color: #FFF !important; /* Texto principal: Branco rígido */
+}
+
+/* Força todos os principais elementos de conteúdo para Preto, com borda Branca */
+body.high-contrast .main-header,
+body.high-contrast .event-list-container,
+body.high-contrast .upcoming-events-container,
+body.high-contrast .modal-content,
+body.high-contrast .stat-card {
+    background-color: #000 !important; 
+    color: #FFF !important; 
+    border: 1px solid #FFF !important; /* Delineamento nítido */
+    box-shadow: none !important; /* Remove sombras */
+}
+
+/* Cards de Estatística: Fundo Preto, Cores de texto primárias */
+body.high-contrast .stat-card.blue,
+body.high-contrast .stat-card.green,
+body.high-contrast .stat-card.purple {
+    background-color: #000 !important;
+    color: #FFFF00 !important; /* Texto Primário: Amarelo Brilhante */
+    border: 3px solid #FFFF00 !important;
+}
+body.high-contrast .stat-card .card-value {
+    color: #FFF !important;
+}
+
+/* Itens da Lista de Eventos */
+body.high-contrast .event-item {
+    background-color: #000 !important; 
+    border: 2px solid #FFF !important; 
+    color: #FFF !important; 
+}
+body.high-contrast .event-time {
+    color: #00FFFF !important; /* Tempo/detalhes em Ciano */
+}
+body.high-contrast .event-icon.pending {
+    background-color: #FFF !important;
+    color: #000 !important;
+}
+body.high-contrast .event-icon.completed {
+    background-color: #000 !important; 
+    color: #00FF00 !important; /* Ícone de check em Verde Brilhante */
+}
+
+/* Botões: Fundo forte, Texto contrastante */
+body.high-contrast .add-btn,
+body.high-contrast .logout-btn,
+body.high-contrast .create-event-btn {
+    background-color: #FFFF00 !important; /* Fundo Amarelo */
+    color: #000 !important; /* Texto Preto */
+    border: 2px solid #000 !important;
+}
+
+/* Botões de Ação (Ícones) */
+body.high-contrast .action-btn,
+body.high-contrast .icon-btn {
+    background: #000 !important;
+    color: #FFF !important;
+    border: 1px solid #FFF !important;
+}
+body.high-contrast .delete-btn:hover {
+    color: #FF00FF !important; /* Magenta Brilhante */
+}
+
+/* Inputs e Formulários */
+body.high-contrast input,
+body.high-contrast textarea,
+body.high-contrast select {
+    background-color: #111 !important;
+    color: #FFF !important;
+    border: 2px solid #FFF !important;
+}
+
+/* Toggle Switch no Alto Contraste */
+body.high-contrast .toggle-switch .slider {
+    background-color: #FF00FF !important; /* OFF em Magenta */
+}
+body.high-contrast input:checked + .slider {
+    background-color: #00FF00 !important; /* ON em Verde Brilhante */
+}
+
+/* Certifique-se de que o texto riscado permaneça legível */
+body.high-contrast .feito {
+    text-decoration: line-through;
+    opacity: 1; /* Remove a opacidade para garantir a cor */
+    color: #00FFFF !important; /* Cor ciano no texto riscado */
 }

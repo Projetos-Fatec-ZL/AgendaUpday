@@ -71,8 +71,8 @@ body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.4);
-    color: white;
+    background: transparent;
+    color: #3b82f6;
     border: none;
     /* Reduz o preenchimento */
     padding: 7px 10px; 
@@ -85,7 +85,7 @@ body {
 }
 
 .carousel-arrow:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .carousel-arrow.left-arrow {
@@ -101,9 +101,23 @@ body {
 /*ajuste de responsividade para telas menores */
 @media (max-width: 900px) {
   .carousel-arrow {
-    font-size: 1rem; /* Ainda menor no mobile */
-    padding: 5px 8px;
+    font-size: 2.0rem; /* Aumenta o tamanho da seta para mobile */
+    padding: 0 10px; /* Adiciona um pequeno padding horizontal para 'espaço' */
+    position: absolute;
+    background: transparent;
+    border: none;
   }
+  .carousel-arrow.left-arrow {
+    left: -160px;
+    border-radius: 0 4px 4px 0;
+    background-color: transparent;
+}
+
+.carousel-arrow.right-arrow {
+    right: -160px;
+    border-radius: 4px 0 0 4px;
+    background-color: transparent;
+}
 }
 
 .carousel-slide-content h1 {
