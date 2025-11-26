@@ -58,17 +58,23 @@ body {
 
 .carousel-slide-content.generic-bg-1 {
     /* Pode ser uma cor ou um placeholder de imagem */
-    background: linear-gradient(135deg, #a5b4fc, #818cf8);
-    color: white;
+    background-image: url(/assets/Inicial.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .carousel-slide-content.generic-bg-2 {
     /* Outra cor ou placeholder */
-    background: linear-gradient(135deg, #fcd34d, #fbbf24);
-    color: #333;
+    background-image: url(/assets/Eventos.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .carousel-slide-content.generic-bg-3 {
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: white;
+    background-image: url(/assets/Acessibilidade.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .carousel-arrow {
