@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const modalList = document.getElementById("modal-event-list");
     const upcomingList = document.querySelector(".upcoming-list");
 
+    // Elementos do DOM para gráficos
+const chartsModal = document.getElementById('charts-modal');
+const chartsBtn = document.getElementById('charts-btn');
+const closeChartsModalBtn = document.getElementById('close-charts-modal-btn');
+const filterBtns = document.querySelectorAll('.filter-btn');
+
     // Modal de Criação/Edição
     const modalAddEvento = document.getElementById('novoEventoModal');
     const openModalBtn = document.getElementById('add-event-btn');
@@ -25,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const createEventForm = document.getElementById("createEventForm");
     const modalTitle = modalAddEvento.querySelector('h2');
     const submitButton = modalAddEvento.querySelector('.create-event-btn');
+
 
     // Variável para armazenar o ID do evento em modo de edição
     let currentEditingEventId = null;
@@ -45,6 +52,363 @@ document.addEventListener("DOMContentLoaded", function() {
     const FONT_STORAGE_KEY = 'fontSizeAdjustmentFactor';
     // Define o "passo" de ajuste (1.1 = 10% por clique)
     const ADJUSTMENT_STEP = 1.1;
+
+    // =============================================
+// CONTROLE DO MODAL DE GRÁFICOS
+// =============================================
+// Dados de exemplo
+const dadosAgenda = {
+    eventos: {
+        concluidos: 15,
+        pendentes: 8,
+        cancelados: 2
+    },
+    categorias: {
+        estudo: 5,
+        trabalho: 8,
+        pessoal: 7,
+        prova: 2,
+        sono: 4,
+        exercicio: 3,
+        evento: 1
+    },
+    prioridades: {
+        alta: 6,
+        media: 12,
+        baixa: 7
+    },
+    progressoSemanal: [5, 8, 3, 10, 6, 9, 4] // Segunda a Domingo
+};
+
+// Variáveis para armazenar as instâncias dos gráficos
+let statusChart, categoryChart, progressChart, priorityChart;
+
+// Abrir modal de gráficos
+if (chartsBtn) {
+    chartsBtn.addEventListener('click', () => {
+        console.log('Abrindo modal de gráficos...');
+        chartsModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        inicializarGraficos();
+    });
+}
+
+// Fechar modal de gráficos
+if (closeChartsModalBtn) {
+    closeChartsModalBtn.addEventListener('click', () => {
+        chartsModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+}
+
+// Fechar modal clicando fora
+if (chartsModal) {
+    chartsModal.addEventListener('click', (event) => {
+        if (event.target === chartsModal) {
+            chartsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+}
+
+// Fechar com ESC
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && chartsModal.style.display === 'flex') {
+        chartsModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+});
+
+// Filtros de período
+if (filterBtns.length > 0) {
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active de todos
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Adiciona active no clicado
+            btn.classList.add('active');
+            
+            const periodo = btn.dataset.period;
+            atualizarGraficos(periodo);
+        });
+    });
+}
+
+// Inicializar todos os gráficos
+function inicializarGraficos() {
+    criarGraficoStatus();
+    criarGraficoCategorias();
+    criarGraficoProgresso();
+    criarGraficoPrioridades();
+}
+
+// Gráfico de Status dos Eventos
+function criarGraficoStatus() {
+    const ctx = document.getElementById('events-status-chart');
+    if (!ctx) return;
+    
+    // Destruir gráfico existente se houver
+    if (statusChart) {
+        statusChart.destroy();
+    }
+    
+    statusChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Concluídos', 'Pendentes', 'Cancelados'],
+            datasets: [{
+                label: 'Quantidade',
+                data: [
+                    dadosAgenda.eventos.concluidos,
+                    dadosAgenda.eventos.pendentes,
+                    dadosAgenda.eventos.cancelados
+                ],
+                backgroundColor: [
+                    '#28a745',
+                    '#ffc107',
+                    '#dc3545'
+                ],
+                borderColor: [
+                    '#218838',
+                    '#e0a800',
+                    '#c82333'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw} eventos`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Categorias
+function criarGraficoCategorias() {
+    const ctx = document.getElementById('events-category-chart');
+    if (!ctx) return;
+    
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+    
+    categoryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Estudo', 'Trabalho', 'Pessoal', 'Prova', 'Sono', 'Exercício', 'Evento'],
+            datasets: [{
+                label: 'Quantidade',
+                data: [
+                    dadosAgenda.categorias.estudo,
+                    dadosAgenda.categorias.trabalho,
+                    dadosAgenda.categorias.pessoal,
+                    dadosAgenda.categorias.prova,
+                    dadosAgenda.categorias.sono,
+                    dadosAgenda.categorias.exercicio,
+                    dadosAgenda.categorias.evento
+                ],
+                backgroundColor: [
+                    '#007bff',
+                    '#6f42c1',
+                    '#e83e8c',
+                    '#fd7e14',
+                    '#17a2b8',
+                    '#20c997',
+                    '#ffc107'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Progresso Semanal
+function criarGraficoProgresso() {
+    const ctx = document.getElementById('weekly-progress-chart');
+    if (!ctx) return;
+    
+    if (progressChart) {
+        progressChart.destroy();
+    }
+    
+    progressChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            datasets: [{
+                label: 'Eventos Concluídos',
+                data: dadosAgenda.progressoSemanal,
+                backgroundColor: '#17a2b8',
+                borderColor: '#138496',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Prioridades
+function criarGraficoPrioridades() {
+    const ctx = document.getElementById('priority-chart');
+    if (!ctx) return;
+    
+    if (priorityChart) {
+        priorityChart.destroy();
+    }
+    
+    priorityChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Alta', 'Média', 'Baixa'],
+            datasets: [{
+                label: 'Quantidade',
+                data: [
+                    dadosAgenda.prioridades.alta,
+                    dadosAgenda.prioridades.media,
+                    dadosAgenda.prioridades.baixa
+                ],
+                backgroundColor: [
+                    '#dc3545',
+                    '#ffc107',
+                    '#28a745'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Atualizar gráficos baseado no período selecionado
+function atualizarGraficos(periodo) {
+    console.log(`Atualizando gráficos para: ${periodo}`);
+    
+    // Simulando dados diferentes para cada período
+    let novosDados = {};
+    
+    switch(periodo) {
+        case 'day':
+            novosDados = {
+                eventos: { concluidos: 3, pendentes: 2, cancelados: 0 },
+                categorias: { estudo: 1, trabalho: 2, pessoal: 1, prova: 0, sono: 1, exercicio: 0, evento: 0 },
+                prioridades: { alta: 1, media: 3, baixa: 1 },
+                progressoSemanal: [1, 2, 1, 3, 2, 1, 0]
+            };
+            break;
+        case 'week':
+            novosDados = {
+                eventos: { concluidos: 15, pendentes: 8, cancelados: 2 },
+                categorias: { estudo: 5, trabalho: 8, pessoal: 7, prova: 2, sono: 4, exercicio: 3, evento: 1 },
+                prioridades: { alta: 6, media: 12, baixa: 7 },
+                progressoSemanal: [5, 8, 3, 10, 6, 9, 4]
+            };
+            break;
+        case 'month':
+            novosDados = {
+                eventos: { concluidos: 45, pendentes: 25, cancelados: 5 },
+                categorias: { estudo: 15, trabalho: 25, pessoal: 20, prova: 8, sono: 12, exercicio: 10, evento: 5 },
+                prioridades: { alta: 18, media: 35, baixa: 22 },
+                progressoSemanal: [20, 25, 18, 30, 22, 15, 10]
+            };
+            break;
+    }
+    
+    // Atualizar dados
+    Object.assign(dadosAgenda, novosDados);
+    
+    // Recriar gráficos com novos dados
+    criarGraficoStatus();
+    criarGraficoCategorias();
+    criarGraficoProgresso();
+    criarGraficoPrioridades();
+}
+
+// Inicializar sistema de gráficos quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Sistema de gráficos carregado!');
+    
+    // Verificar se os elementos existem
+    if (chartsBtn) {
+        console.log('Botão de gráficos encontrado!');
+    } else {
+        console.error('Botão de gráficos não encontrado!');
+    }
+    
+    if (chartsModal) {
+        console.log('Modal de gráficos encontrado!');
+    } else {
+        console.error('Modal de gráficos não encontrado!');
+    }
+});
 
     // --- FUNÇÕES DE UTILIDADE ---
 
