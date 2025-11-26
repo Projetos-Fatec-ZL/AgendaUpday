@@ -41,12 +41,12 @@ body {
 .carousel-slides {
   display: flex;
   transition: transform 0.5s ease-in-out;
-  width: 300%; 
+  width: 400%; 
   height: 100%;
 }
 
 .carousel-slide-content {
-  width: calc(100% / 3); 
+  width: calc(100% / 4); 
   flex-shrink: 0;
   padding: 50px;
   display: flex;
@@ -65,6 +65,10 @@ body {
     /* Outra cor ou placeholder */
     background: linear-gradient(135deg, #fcd34d, #fbbf24);
     color: #333;
+}
+.carousel-slide-content.generic-bg-3 {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
 }
 
 .carousel-arrow {
