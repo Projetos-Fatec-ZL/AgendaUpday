@@ -102,20 +102,3 @@ Ao acessar a interface, use a opção de Cadastro (Register) para criar um novo 
 Após o cadastro, use suas credenciais para fazer o Login.
 
 Você será redirecionado para o dashboard para gerenciar seus eventos.
-
-
-📁 Estrutura do Projeto
-PI-AGENDAUPDAY/
-├── backend/
-│   ├── src/
-│   │   ├── config/          # Configuração do banco de dados (db.js)
-│   │   ├── middleware/      # Funções intermediárias (auth.js)
-│   │   ├── models/          # Schemas do Mongoose (Event.js, User.js)
-│   │   ├── routes/          # Rotas da API (events.js, auth.js)
-│   │   └── index.js         # Ponto de entrada e inicialização
-│   ├── node_modules/        
-│   └── .env                 # Variáveis de ambiente
-└── frontend/
-    ├── login.html           # Página de Login/Cadastro
-    ├── dashboard.html       # Página principal e gráficos
-    └── <Arquivos CSS e JS do Frontend>
