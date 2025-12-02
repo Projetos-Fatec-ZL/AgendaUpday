@@ -76,6 +76,8 @@
  
                 <label for="senha">Senha</label>
                 <input type="password" id="senha" placeholder="••••••••" required>
+
+                <a href="#" class="forgot-password-link" id="forgotPasswordLink">Esqueci minha senha</a>
  
                 <button type="submit">Entrar</button>
  
@@ -85,24 +87,131 @@
             <p id="mensagem"></p>
         </section>
  
+<div class="modal-overlay" id="emailModal">
+    <div class="modal-content">
+        <section class="email-box"> 
+            
+            <button class="close-button" onclick="closeEmailModal()">
+                &times; 
+            </button>
+            
+            <h2>Esqueceu sua Senha?</h2>
+            <p>Digite o e-mail associado à sua conta. Enviaremos um código de recuperação para você.</p>
+
+            <form id="emailForm">
+                <label for="recoveryEmail">Seu E-mail</label>
+                <input 
+                    type="email" 
+                    id="recoveryEmail" 
+                    placeholder="exemplo@email.com" 
+                    required 
+                >
+
+                <button type="submit">Enviar Código</button>
+
+                <p id="email-modal-message" class="login-text" style="margin-top: 15px; color: red;"></p>
+            </form>
+        </section>
+    </div>
+</div>
+
+<div class="modal-overlay" id="recoveryModal">
+    <div class="modal-content">
+        <section class="recovery-box"> 
+            
+            <button class="close-button" onclick="closeRecoveryModal()">
+                &times; 
+            </button>
+            
+            <h2>Recuperação de Senha</h2>
+            <p>Um código de recuperação foi enviado para o seu email. Digite-o abaixo para continuar.</p>
+
+            <form id="recoveryForm">
+                <label for="recoveryCode">Código de Recuperação</label>
+                <input 
+                    type="text" 
+                    id="recoveryCode" 
+                    placeholder="Ex: 123456" 
+                    required 
+                    maxlength="6"
+                >
+
+                <label for="newPassword">Nova Senha</label>
+                <input 
+                    type="password" 
+                    id="newPassword" 
+                    placeholder="••••••••" 
+                    required
+                    disabled
+                >
+
+                <label for="confirmPassword">Confirmar Senha</label>
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    placeholder="••••••••" 
+                    required
+                    disabled
+                >
+
+                <button type="submit" id="validateButton">Validar Código</button>
+                <button type="button" id="resetButton" style="display: none;">Redefinir Senha</button>
+
+                <p id="modal-message" class="login-text" style="margin-top: 15px; color: red;"></p>
+            </form>
+        </section>
+    </div>
+</div>
+
     </main>
  
     <script>
-        const slidesContainer = document.getElementById('carouselSlides');
-        const dotsContainer = document.getElementById('carouselDots');
-        const dots = dotsContainer.querySelectorAll('.dot');
-        const prevButton = document.getElementById('prevSlide');
-        const nextButton = document.getElementById('nextSlide');
-       
-        const totalSlides = dots.length;
-        let currentSlide = 0;
- 
-        function updateCarousel() {
+    // --- 1. VARIÁVEIS DO CARROSSEL ---
+    const slidesContainer = document.getElementById('carouselSlides');
+    const dotsContainer = document.getElementById('carouselDots');
+    // Verifica se os elementos existem, pois a tela de Login pode ter estrutura diferente
+    if (slidesContainer && dotsContainer) {
+        var dots = dotsContainer.querySelectorAll('.dot');
+        var prevButton = document.getElementById('prevSlide');
+        var nextButton = document.getElementById('nextSlide');
+        var totalSlides = dots.length;
+        var currentSlide = 0;
+    }
+
+
+    // --- 2. VARIÁVEIS DOS MODAIS ---
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    
+    // VARIÁVEIS DO MODAL 1: E-MAIL
+    const emailModal = document.getElementById('emailModal');
+    const emailForm = document.getElementById('emailForm');
+    const recoveryEmailInput = document.getElementById('recoveryEmail');
+    const emailModalMessage = document.getElementById('email-modal-message');
+
+    // VARIÁVEIS DO MODAL 2: CÓDIGO E SENHA
+    const recoveryModal = document.getElementById('recoveryModal');
+    const recoveryForm = document.getElementById('recoveryForm');
+    const validateButton = document.getElementById('validateButton');
+    const resetButton = document.getElementById('resetButton');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const recoveryCodeInput = document.getElementById('recoveryCode');
+    const modalMessage = document.getElementById('modal-message');
+    
+    // Estado para controle de fluxo
+    let codeValidated = false;
+    let registeredEmail = ''; // Armazena o email enviado para o segundo modal
+
+    // --- 3. FUNÇÕES DO CARROSSEL (Só serão definidas se o HTML do carrossel existir) ---
+    
+    if (slidesContainer && dotsContainer) {
+        function updateCarousel() {  
             slidesContainer.style.transform = `translateX(-${currentSlide * (100 / totalSlides)}%)`;
             dots.forEach((dot, index) => {
                 dot.classList.toggle('active', index === currentSlide);
             });
         }
+
         function goToSlide(index) {
             if (index < 0) {
                 currentSlide = totalSlides - 1;
@@ -113,28 +222,167 @@
             }
             updateCarousel();
         }
- 
-        prevButton.addEventListener('click', () => {
-            goToSlide(currentSlide - 1);
-        });
- 
-        nextButton.addEventListener('click', () => {
-            goToSlide(currentSlide + 1);
-        });
- 
-        dotsContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('dot')) {
-                const slideIndex = parseInt(e.target.dataset.slide);
-                goToSlide(slideIndex);
-            }
-        });
- 
-        setInterval(() => {
-            goToSlide(currentSlide + 1);
-        }, 10000);
- 
-        updateCarousel();
-    </script>
+    }
+    
+    // --- 4. FUNÇÕES DE CONTROLE DOS MODAIS ---
+
+    function openEmailModal() {
+        if (emailModal) {
+            emailModal.style.display = 'flex';
+            emailForm.reset();
+            emailModalMessage.textContent = '';
+        }
+    }
+    
+    function closeEmailModal() {
+        if (emailModal) {
+            emailModal.style.display = 'none';
+        }
+    }
+
+    function openRecoveryModal() {
+        if (recoveryModal) {
+            recoveryModal.style.display = 'flex';
+            codeValidated = false;
+            newPasswordInput.disabled = true;
+            confirmPasswordInput.disabled = true;
+            recoveryCodeInput.disabled = false;
+            validateButton.style.display = 'block';
+            resetButton.style.display = 'none';
+            modalMessage.textContent = '';
+            recoveryForm.reset();
+        }
+    }
+
+    function closeRecoveryModal() {
+        if (recoveryModal) {
+            recoveryModal.style.display = 'none';
+        }
+    }
+
+
+    // --- 5. EVENT LISTENERS ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // 5.1. Listeners do Carrossel (Se Existir)
+        if (slidesContainer && dotsContainer) {
+            prevButton.addEventListener('click', () => {
+                goToSlide(currentSlide - 1);
+            });
+
+            nextButton.addEventListener('click', () => {
+                goToSlide(currentSlide + 1);
+            });
+
+            dotsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('dot')) {
+                    const slideIndex = parseInt(e.target.dataset.slide);
+                    goToSlide(slideIndex);
+                }
+            });
+
+            setInterval(() => {
+                goToSlide(currentSlide + 1);
+            }, 10000);
+            
+            // Inicializa o carrossel
+            updateCarousel();
+        }
+
+        // 5.2. Listener para abrir o PRIMEIRO Modal (Link "Esqueci minha senha")
+        if (forgotPasswordLink) {
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                openEmailModal();
+            });
+        }
+        
+        // 5.3. Lógica do MODAL DE E-MAIL (Primeiro Passo)
+        if (emailForm) {
+            emailForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                emailModalMessage.textContent = '';
+
+                registeredEmail = recoveryEmailInput.value;
+
+                if (registeredEmail && registeredEmail.includes('@')) {
+                    emailModalMessage.style.color = 'green';
+                    emailModalMessage.textContent = `Código enviado para ${registeredEmail}!`;
+                    
+                    setTimeout(() => {
+                        closeEmailModal();
+                        openRecoveryModal();
+                    }, 1000); 
+
+                } else {
+                    emailModalMessage.style.color = 'red';
+                    emailModalMessage.textContent = 'Por favor, insira um e-mail válido.';
+                }
+            });
+        }
+        
+        // 5.4. Lógica do MODAL DE CÓDIGO E SENHA (Segundo Passo)
+        if (recoveryForm) {
+            recoveryForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                modalMessage.textContent = ''; 
+
+                if (!codeValidated) {
+                    // TENTATIVA DE VALIDAÇÃO DO CÓDIGO
+                    const code = recoveryCodeInput.value;
+                    
+                    if (code === '123456') { // SIMULAÇÃO
+                        codeValidated = true;
+                        
+                        // Habilita campos de senha e troca botões
+                        newPasswordInput.disabled = false;
+                        confirmPasswordInput.disabled = false;
+                        validateButton.style.display = 'none';
+                        resetButton.style.display = 'block';
+                        recoveryCodeInput.disabled = true; 
+                        
+                        modalMessage.style.color = 'green';
+                        modalMessage.textContent = 'Código validado! Digite sua nova senha.';
+                        
+                    } else {
+                        modalMessage.style.color = 'red';
+                        modalMessage.textContent = 'Código inválido. Tente novamente.';
+                    }
+                } else {
+                    // TENTATIVA DE REDEFINIÇÃO DE SENHA
+                    const newPass = newPasswordInput.value;
+                    const confirmPass = confirmPasswordInput.value;
+
+                    if (newPass.length < 6) {
+                         modalMessage.style.color = 'red';
+                         modalMessage.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+                         return;
+                    }
+
+                    if (newPass !== confirmPass) {
+                        modalMessage.style.color = 'red';
+                        modalMessage.textContent = 'As senhas não coincidem.';
+                        return;
+                    }
+                    
+                    modalMessage.style.color = 'green';
+                    modalMessage.textContent = 'Senha redefinida com sucesso!';
+                    
+                    setTimeout(() => {
+                        closeRecoveryModal();
+                    }, 2000);
+                }
+            });
+
+            // Listener para o botão Redefinir Senha
+            resetButton.addEventListener('click', (e) => {
+                recoveryForm.dispatchEvent(new Event('submit'));
+            });
+        }
+
+    });
+</script>
 
 <script src="../javascript/auth.js"></script>
 </body>
