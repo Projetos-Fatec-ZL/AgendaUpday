@@ -2,7 +2,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // --- Configurações e Variáveis Globais ---
     const API_BASE_URL = 'http://localhost:5000/api';
+    const METRICS_API_URL = `${API_BASE_URL}/events/metrics`; // ✅ NOVO ENDPOINT DE MÉTRICAS
     let todosOsEventos = [];
+    let pieChart = null; // ✅ Variável global para a instância do gráfico
+    
+    // ✅ Cores para as Categorias (Chart.js)
+    const CATEGORY_COLORS = {
+        'estudo': 'rgb(75, 192, 192)', 
+        'trabalho': 'rgb(255, 99, 132)', 
+        'pessoal': 'rgb(54, 162, 235)', 
+        'prova': 'rgb(255, 159, 64)', 
+        'sono': 'rgb(153, 102, 255)', 
+        'exercicio': 'rgb(152, 216, 172)', 
+        'evento': 'rgb(255, 205, 86)', 
+        'outros': 'rgb(201, 203, 207)'
+    };
+
 
     // --- Elementos do DOM EXISTENTES ---
     const previewList = document.getElementById("event-list-preview");
@@ -29,6 +44,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // Variável para armazenar o ID do evento em modo de edição
     let currentEditingEventId = null;
 
+    // --- NOVO: Elementos DOM para o Gráfico ---
+    const statusFilter = document.getElementById('status-filter');
+    const timeframeFilter = document.getElementById('timeframe-filter');
+    const chartCanvas = document.getElementById('category-pie-chart');
+    const chartMessage = document.getElementById('chart-message');
+    
+
     // --- NOVO: Elementos de Tema e Configurações ---
     const body = document.body;
     const themeToggleBtn = document.getElementById('theme-toggle-btn'); // Botão no Header
@@ -37,13 +59,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeSettingsModalBtn = document.getElementById('close-settings-modal-btn'); // Botão fechar dentro do Modal
     const themeToggleModalBtn = document.getElementById('theme-toggle-modal-btn');
     const highContrastSwitch = document.getElementById('high-contrast-switch'); // Switch Alto Contraste
-    const darkModeSwitch = document.getElementById('dark-mode-switch'); // Switch Dark Mode
+    // NOTA: O elemento 'dark-mode-switch' não existe no HTML fornecido, usando apenas os botões/toggle.
+    // const darkModeSwitch = document.getElementById('dark-mode-switch'); // Switch Dark Mode
     const decreaseFontBtn = document.getElementById('font-size-decrease');
     const increaseFontBtn = document.getElementById('font-size-increase');
-
-     // Variáveis de Acessibilidade
+    
+    // Variáveis de Acessibilidade
     const FONT_STORAGE_KEY = 'fontSizeAdjustmentFactor';
-    // Define o "passo" de ajuste (1.1 = 10% por clique)
     const ADJUSTMENT_STEP = 1.1;
 
     // --- FUNÇÕES DE UTILIDADE ---
@@ -69,7 +91,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const date = new Date(isoString);
         if (isNaN(date.getTime())) return '';
         
-        // Pega o fuso horário local e formata para o input
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -101,16 +122,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 3. Atualiza os Cards
     function updateStats() {
-        // Garante que o evento está marcado como 'completed' no objeto local, que vem da API como 'isCompleted'
         const activeEvents = todosOsEventos.filter(event => !event.isCompleted);
 
         if (totalEventsSpan) totalEventsSpan.textContent = todosOsEventos.length;
 
-        // Contar concluídos (usando isCompleted, que é o nome correto da API)
         const completedCount = todosOsEventos.filter(event => event.isCompleted).length;
         if (completedTodaySpan) completedTodaySpan.textContent = completedCount;
         
-        // Contar planos ativos
         const plansCount = activeEvents.filter(event => event.category === 'estudo').length;
         if (plansCountSpan) plansCountSpan.textContent = plansCount;
     }
@@ -119,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function() {
     function createEventItemHTML(event) {
         let displayTime = '';
         try {
-            // Se for concluído, mostra a data de conclusão, senão, a data prevista
             const dateToDisplay = event.isCompleted && event.completedAt ? event.completedAt : event.date;
 
             const dateObj = new Date(dateToDisplay);
@@ -139,9 +156,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         
         const isCompleted = event.isCompleted; 
-        // Usamos ícones diferentes para Toggle (check vs undo)
         const iconContent = isCompleted ? '<i class="fas fa-undo"></i>' : '<i class="fas fa-check"></i>'; 
-        const iconBgClass = isCompleted ? 'completed-toggle' : 'pending-toggle'; // Nova classe para o toggle
+        const iconBgClass = isCompleted ? 'completed-toggle' : 'pending-toggle'; 
         const titleClass = isCompleted ? 'feito' : ''; 
         
         return `
@@ -169,41 +185,30 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 5. Popula as Listas e Adiciona Listeners de Ação
     function populateLists() {
-        // Ordena: ativos (pela data) e concluídos (do mais recente para o mais antigo, se possível, senão no final)
         todosOsEventos.sort((a, b) => {
             if (a.isCompleted !== b.isCompleted) {
-                return a.isCompleted ? 1 : -1; // Coloca concluídos no final
+                return a.isCompleted ? 1 : -1; 
             }
-            // Se ambos têm o mesmo status (ambos ativos ou ambos concluídos), ordena por data
             return new Date(a.date) - new Date(b.date);
         });
         
-        // --- Lógica de Filtragem ---
         const now = new Date();
         
-        // Filtra para obter apenas eventos futuros E NÃO CONCLUÍDOS
         const upcomingEvents = todosOsEventos
             .filter(event => 
-                !event.isCompleted && // Filtro CRUCIAL: Exclui eventos concluídos!
+                !event.isCompleted && 
                 new Date(event.date) >= now
             )
-            .slice(0, 5); // Limita aos 5 próximos
+            .slice(0, 5); 
         
-        
-        // --- POPULAR AS SEÇÕES NA DASHBOARD ---
-        
-        // Popula Preview (Lista "Todos os Eventos" na Dashboard) - MOSTRA TODOS!
         if (previewList) {
-            // Agora usamos todosOsEventos. O evento concluído aparecerá riscado graças ao createEventItemHTML.
             previewList.innerHTML = todosOsEventos.slice(0, 5).map(createEventItemHTML).join('');
         }
         
-        // Popula Modal "Ver Todos" - MOSTRA TODOS!
         if (modalList) {
             modalList.innerHTML = todosOsEventos.map(createEventItemHTML).join('');
         }
         
-        // Popula Próximos Eventos - MOSTRA APENAS OS FILTRADOS (FUTUROS e ATIVOS)
         if (upcomingList) {
             if (upcomingEvents.length > 0) {
                 upcomingList.innerHTML = upcomingEvents.map(createEventItemHTML).join('');
@@ -212,18 +217,16 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
         
-        // Exibir/Ocultar botão "Ver Todos"
         if (viewAllBtn) {
             viewAllBtn.style.display = todosOsEventos.length > 5 ? "block" : "none";
         }
         
-        // Adiciona Listeners de Ação APÓS o HTML ser gerado
         addEventActionListeners();
     }
     
     // 6. Funções de Manipulação de Eventos (DELETE, PUT, TOGGLE)
 
-    // A. Excluir Evento (DELETE /api/events/:id)
+    // A. Excluir Evento
     async function deleteEvent(eventId) {
         const token = getToken();
         try {
@@ -235,6 +238,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (response.ok) {
                 showFeedback("🗑️ Evento excluído com sucesso!", 'success');
                 fetchEventsAndPopulate();
+                loadMetricsAndRenderChart(); // ✅ Recarrega o gráfico após CRUD
             } else {
                 const errorData = await response.json();
                 showFeedback(`❌ Falha ao excluir. Mensagem: ${errorData.msg || "Erro desconhecido"}`, 'error');
@@ -245,12 +249,11 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    // B. Alternar status Concluído (PUT /api/events/:id/toggle-completed)
+    // B. Alternar status Concluído 
     async function toggleCompleted(event) {
         const eventId = event._id;
 
         const token = getToken();
-        // ** ROTA CORRETA DA API: /api/events/:id/toggle-completed **
         const url = `${API_BASE_URL}/events/${eventId}/toggle-completed`;
         
         try {
@@ -269,7 +272,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     `↩️ Evento "${updatedEvent.title}" reaberto.`;
 
                 showFeedback(msg, 'success');
-                fetchEventsAndPopulate(); // Recarrega a lista para atualizar o estado
+                fetchEventsAndPopulate(); 
+                loadMetricsAndRenderChart(); // ✅ Recarrega o gráfico após CRUD
             } else {
                 const errorData = await response.json();
                 showFeedback(`❌ Falha ao alterar status. Mensagem: ${errorData.msg || "Erro desconhecido"}`, 'error');
@@ -285,41 +289,32 @@ document.addEventListener("DOMContentLoaded", function() {
         const event = todosOsEventos.find(e => e._id === eventId);
         if (!event) return showFeedback("Evento não encontrado para edição.", 'error');
 
-        // 1. Configurar Modal para EDIÇÃO
         currentEditingEventId = eventId;
         modalTitle.textContent = "Editar Evento";
         submitButton.textContent = "Salvar Alterações";
         
-        // 2. Preencher formulário com dados existentes
         document.getElementById("titulo").value = event.title;
         document.getElementById("descricao").value = event.description || '';
         document.getElementById("tipo").value = event.category; 
         document.getElementById("prioridade").value = event.priority;
         document.getElementById("duracao").value = event.duration;
-        
-        // Preencher Data e Hora: Usa a função auxiliar para o formato 'yyyy-MM-ddThh:mm'
         document.getElementById("dataHora").value = formatToDatetimeLocal(event.date); 
 
-        // 3. Abrir o modal
         modalAddEvento.style.display = 'flex';
     }
 
 
     // 7. Event Listener Central para Ações (Delete, Edit, Toggle)
     function addEventActionListeners() {
-        // Target: Onde o evento está acontecendo (pode ser o preview ou o modal)
         const allEventsContainers = [previewList, modalList, upcomingList];
         
         allEventsContainers.forEach(container => {
             if (!container) return; 
 
-            // Remove listeners antigos para evitar duplicação (importante)
             container.onclick = null; 
 
-            // Usa delegação de eventos nos containers para garantir que botões dinâmicos funcionem
             container.onclick = function(e) {
                 let target = e.target;
-                // Procura o elemento pai com data-action, garantindo que o clique em um <i> interno funcione
                 while (target && !target.dataset.action && target !== container) {
                     target = target.parentElement;
                 }
@@ -356,17 +351,15 @@ document.addEventListener("DOMContentLoaded", function() {
         } 
 
         try {
-            // NOTE: O backend agora retorna o campo 'isCompleted', não 'completed'.
             const response = await fetch(`${API_BASE_URL}/events`, {
                 method: 'GET',
                 headers: { 'x-auth-token': token }
             });
 
             if (response.ok) {
-                // Mapeia para garantir compatibilidade se a propriedade 'completed' for usada no front
                 todosOsEventos = (await response.json()).map(event => ({
                     ...event,
-                    completed: event.isCompleted // Garante retrocompatibilidade com o front
+                    completed: event.isCompleted 
                 })); 
             } else {
                 todosOsEventos = []; 
@@ -390,6 +383,121 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    // =======================================================
+    // FUNÇÃO PRINCIPAL: CARREGAR MÉTRICAS E RENDERIZAR GRÁFICO (NOVO)
+    // =======================================================
+
+    async function loadMetricsAndRenderChart() {
+        const token = getToken();
+        
+        if (!token) {
+            console.warn("Token de autenticação não encontrado. Não é possível carregar o gráfico.");
+            if (pieChart) pieChart.destroy();
+            if (chartCanvas) chartCanvas.classList.add('hidden');
+            if (chartMessage) {
+                chartMessage.textContent = "Faça login para visualizar as métricas.";
+                chartMessage.classList.remove('hidden');
+            }
+            return;
+        }
+
+        // Obtém os valores dos filtros
+        const status = statusFilter ? statusFilter.value : 'all';
+        const timeframe = timeframeFilter ? timeframeFilter.value : 'all';
+
+        // Constrói a URL da API, usando o METRICS_API_URL definido
+        const url = `${METRICS_API_URL}?status=${status}&timeframe=${timeframe}`;
+        
+        try {
+            const response = await fetch(url, {
+                // Usa o cabeçalho 'x-auth-token' do seu projeto
+                headers: { 'x-auth-token': token } 
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar métricas: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            // 🛑 COLOQUE O LOG AQUI 🛑
+            console.log("Dados da API de Métricas:", data);
+            
+            if (data.length === 0) {
+                if (pieChart) pieChart.destroy();
+                pieChart = null; 
+                if (chartCanvas) chartCanvas.classList.add('hidden');
+                if (chartMessage) {
+                    chartMessage.textContent = "Nenhum evento encontrado para os filtros selecionados.";
+                    chartMessage.classList.remove('hidden');
+                }
+                return;
+            }
+            
+            if (chartCanvas) chartCanvas.classList.remove('hidden');
+            if (chartMessage) chartMessage.classList.add('hidden');
+
+            // Processa os dados
+            const labels = data.map(item => item.category.charAt(0).toUpperCase() + item.category.slice(1)); 
+            const counts = data.map(item => item.count);
+            const backgroundColors = data.map(item => CATEGORY_COLORS[item.category] || 'rgb(201, 203, 207)');
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Eventos por Categoria',
+                    data: counts,
+                    backgroundColor: backgroundColors,
+                    hoverOffset: 10 
+                }]
+            };
+
+            const ChartDataLabels = window.ChartDataLabels; // Acessa o plugin globalmente
+
+            // RENDERIZA OU ATUALIZA O GRÁFICO
+            if (pieChart) {
+                pieChart.data = chartData;
+                pieChart.update();
+            } else {
+                pieChart = new Chart(chartCanvas, {
+                    type: 'doughnut', 
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, 
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                formatter: (value, ctx) => {
+                                    return value;
+                                },
+                                color: '#fff',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels] 
+                });
+            }
+
+        } catch (error) {
+            console.error("Erro ao buscar dados do gráfico:", error);
+            if (chartMessage) {
+                chartMessage.textContent = "Erro ao carregar dados do gráfico. Verifique a conexão com o servidor.";
+                chartMessage.classList.remove('hidden');
+            }
+        }
+    }
+
 
     // ------------------------------------------------
     // --- LÓGICA DE TEMA E CONFIGURAÇÕES ---
@@ -399,30 +507,23 @@ document.addEventListener("DOMContentLoaded", function() {
     // LÓGICA DE DARK MODE (EXISTENTE)
     // ------------------------------------
     function toggleTheme() {
-        // Alterna a classe 'dark-mode' no elemento body
         body.classList.toggle('dark-mode');
 
-        // Salva a preferência no Local Storage para persistência
         const isDarkMode = body.classList.contains('dark-mode');
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
 
-        // O ícone sempre deve mostrar o modo *para o qual* o usuário pode mudar.
         const newIconClass = isDarkMode ? 'fa-sun' : 'fa-moon'; 
         
-        // Atualiza o ícone do botão do header
         if (themeToggleBtn) {
              themeToggleBtn.querySelector('i').className = `fas ${newIconClass}`;
         }
         
-        // Atualiza o ícone/texto do botão dentro do modal de configurações
         if (themeToggleModalBtn) {
              themeToggleModalBtn.querySelector('i').className = `fas ${newIconClass}`;
         }
         
-        // Sincroniza o switch no modal de configurações
-        if (darkModeSwitch) {
-            darkModeSwitch.checked = isDarkMode;
-        }
+        // Se precisar sincronizar um switch, você faria aqui:
+        // if (darkModeSwitch) darkModeSwitch.checked = isDarkMode;
     }
 
     // Função para aplicar o tema salvo na inicialização
@@ -432,7 +533,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         let shouldBeDark = false;
 
-        // Prioriza o tema salvo, se não houver, usa a preferência do sistema
         if (savedTheme === 'dark') {
             shouldBeDark = true;
         } else if (savedTheme === null && prefersDark) {
@@ -443,75 +543,54 @@ document.addEventListener("DOMContentLoaded", function() {
             body.classList.add('dark-mode');
         }
         
-        // Ajuste o ícone inicial no carregamento
         if (themeToggleBtn) {
             const isCurrentlyDark = body.classList.contains('dark-mode');
-            const initialIconClass = isCurrentlyDark ? 'fa-sun' : 'fa-moon'; // Se está dark, mostra sol (para ir para light)
+            const initialIconClass = isCurrentlyDark ? 'fa-sun' : 'fa-moon'; 
             themeToggleBtn.querySelector('i').className = `fas ${initialIconClass}`;
         }
         
-        // Sincroniza o switch do modal de configurações na inicialização
-        if (darkModeSwitch) {
-            darkModeSwitch.checked = body.classList.contains('dark-mode');
-            // Adiciona listener para o switch, que também deve chamar o toggleTheme
-            darkModeSwitch.addEventListener('change', toggleTheme);
-        }
+        // if (darkModeSwitch) {
+        //     darkModeSwitch.checked = body.classList.contains('dark-mode');
+        //     darkModeSwitch.addEventListener('change', toggleTheme);
+        // }
     }
     
     // ------------------------------------
-    // LÓGICA DE ALTO CONTRASTE (NOVA) 🌟
+    // LÓGICA DE ALTO CONTRASTE (EXISTENTE) 
     // ------------------------------------
 
-    /**
-     * Alterna a classe 'high-contrast' no body e salva a preferência.
-     */
     function toggleHighContrast() {
-        // Alterna a classe CSS que aplica o alto contraste
         body.classList.toggle('high-contrast');
 
-        // Salva o estado no Local Storage
         const isHighContrast = body.classList.contains('high-contrast');
         localStorage.setItem('high-contrast', isHighContrast ? 'on' : 'off');
         
-        // Se o modo de Alto Contraste for ativado, ele deve desativar o Dark Mode.
         if (isHighContrast && body.classList.contains('dark-mode')) {
-            // Desativa Dark Mode e atualiza o estado
             body.classList.remove('dark-mode');
             localStorage.setItem('theme', 'light');
             
-            // Atualiza visualmente o toggle do Dark Mode e ícones
-            if (darkModeSwitch) darkModeSwitch.checked = false;
+            // if (darkModeSwitch) darkModeSwitch.checked = false;
             
-            // Chama o toggleTheme para reverter os ícones e salvar 'light' (apenas para atualizar o ícone)
-            // Se já não estiver dark, ele não fará nada além de atualizar o ícone
             if (themeToggleBtn) toggleTheme(); 
         }
         
-        // Sincroniza o switch do modal de configurações
         if (highContrastSwitch) highContrastSwitch.checked = isHighContrast;
     }
 
-    /**
-     * Aplica o estado de Alto Contraste salvo no Local Storage na inicialização.
-     */
     function applySavedContrast() {
         const savedContrast = localStorage.getItem('high-contrast');
         
         if (savedContrast === 'on') {
             body.classList.add('high-contrast');
-            // Garante que o switch no modal de configurações esteja marcado corretamente
             if (highContrastSwitch) {
                 highContrastSwitch.checked = true;
             }
-            // Se o Alto Contraste for carregado, desativa o Dark Mode, se estiver ativo.
             if (body.classList.contains('dark-mode')) {
                 body.classList.remove('dark-mode');
                 localStorage.setItem('theme', 'light');
-                // Chamamos a lógica do tema para garantir que os ícones reflitam o novo estado 'light'
                 applySavedTheme(); 
             }
         } else if (highContrastSwitch) {
-            // Garante que o switch esteja desmarcado se a preferência for 'off' ou nula
             highContrastSwitch.checked = false;
         }
     }
@@ -537,7 +616,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (settingsModal) {
                 // Atualiza o estado dos switches antes de abrir
                 if (highContrastSwitch) highContrastSwitch.checked = body.classList.contains('high-contrast');
-                if (darkModeSwitch) darkModeSwitch.checked = body.classList.contains('dark-mode');
+                // if (darkModeSwitch) darkModeSwitch.checked = body.classList.contains('dark-mode');
 
                 settingsModal.style.display = 'flex';
             }
@@ -611,34 +690,25 @@ document.addEventListener("DOMContentLoaded", function() {
         createEventForm.addEventListener("submit", async function(e) {
             e.preventDefault();
             
-            // Coleta de dados
             const title = document.getElementById("titulo").value;
             const description = document.getElementById("descricao").value;
             const type = document.getElementById("tipo").value;
             const priority = document.getElementById("prioridade").value;
-            const dateInput = document.getElementById("dataHora").value; // Formato yyyy-MM-ddThh:mm
+            const dateInput = document.getElementById("dataHora").value; 
             const duration = document.getElementById("duracao").value;
 
-            // Validação de Frontend (opcional, mas bom)
             if (!title || !dateInput || !duration) {
                 showFeedback("Por favor, preencha o Título, Data e Duração.", 'error');
                 return;
             }
 
-            // 🌟 CORREÇÃO CRÍTICA PARA NOTIFICAÇÕES 🌟
-            // Converte o formato local YYYY-MM-DDTHH:MM (do input) para uma ISO String (UTC/Zulu Time).
-            // Isso garante que o MongoDB salve o timestamp correto e que o script de notificação
-            // consiga comparar a data com precisão.
             const localDate = new Date(dateInput); 
             const isoDateString = localDate.toISOString(); 
-            // ---------------------------------------------
             
-
-            // Estrutura de dados para o Backend
             const eventData = {
                 title,
                 description,
-                date: isoDateString, // AGORA ESTÁ NO FORMATO ISO PADRONIZADO
+                date: isoDateString, 
                 category: type, 
                 priority,
                 duration: parseInt(duration),
@@ -647,12 +717,10 @@ document.addEventListener("DOMContentLoaded", function() {
             const token = getToken(); 
             if (!token) { showFeedback("❌ Erro de Autenticação.", 'error'); return; }
 
-            // Decide se é POST (Criação) ou PUT (Edição)
             const isEditing = currentEditingEventId !== null;
             const url = isEditing ? `${API_BASE_URL}/events/${currentEditingEventId}` : `${API_BASE_URL}/events`;
             const method = isEditing ? 'PUT' : 'POST';
             const successMsg = isEditing ? "✅ Evento atualizado com sucesso!" : "🎉 Evento criado com sucesso!";
-            // Nota: O status 200 é esperado para PUT/edição, e 201 para POST/criação.
             const statusTarget = isEditing ? 200 : 201; 
 
             try {
@@ -670,9 +738,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     
                     modalAddEvento.style.display = 'none'; 
                     createEventForm.reset(); 
-                    currentEditingEventId = null; // Zera o modo edição
+                    currentEditingEventId = null; 
 
-                    fetchEventsAndPopulate(); // Recarrega a lista
+                    fetchEventsAndPopulate(); 
+                    loadMetricsAndRenderChart(); // ✅ Recarrega o gráfico após CRUD
                 } else {
                     const errorData = await response.json();
                     
@@ -690,53 +759,49 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // --- Funções de Acessibilidade de Fonte ---
 
-    // Função 1: Aplica o fator de escala na raiz (<html>) e Salva
     function applyFontSize(factor) {
         document.documentElement.style.fontSize = `${factor * 100}%`; 
         localStorage.setItem(FONT_STORAGE_KEY, factor.toString());
     }
 
-    // Função 2: Carrega o fator salvo ao iniciar a página
     function loadSavedFontSize() {
         let savedFactor = localStorage.getItem(FONT_STORAGE_KEY);
         if (savedFactor) {
             applyFontSize(parseFloat(savedFactor));
         } else {
-            applyFontSize(1.0); // Padrão 100%
+            applyFontSize(1.0); 
         }
     }
-    // --- Inicialização da Dashboard ---
+    
+    loadSavedFontSize(); 
 
-    loadSavedFontSize(); // ✅ Carrega o tamanho salvo ao iniciar a página
-
-    // ✅ Listeners para Aumentar e Diminuir
     if (decreaseFontBtn && increaseFontBtn) {
         
-        // Listener para DIMINUIR
         decreaseFontBtn.addEventListener('click', () => {
             let currentFactor = parseFloat(localStorage.getItem(FONT_STORAGE_KEY)) || 1.0;
-            
-            // Diminui 10%, com limite mínimo de 80% (0.8)
             let newFactor = Math.max(0.8, currentFactor / ADJUSTMENT_STEP);
-            
             applyFontSize(newFactor);
         });
 
-        // Listener para AUMENTAR
         increaseFontBtn.addEventListener('click', () => {
             let currentFactor = parseFloat(localStorage.getItem(FONT_STORAGE_KEY)) || 1.0;
-
-            // Aumenta 10%, com limite máximo de 130% (1.3)
             let newFactor = Math.min(1.3, currentFactor * ADJUSTMENT_STEP);
-
             applyFontSize(newFactor);
         });
     }
 
-
+    // ----------------------------------------------------
+    // ✅ NOVO: Listeners para Filtros do Gráfico (dentro do DOMContentLoaded)
+    // ----------------------------------------------------
+    if (statusFilter && timeframeFilter) {
+        statusFilter.addEventListener('change', loadMetricsAndRenderChart);
+        timeframeFilter.addEventListener('change', loadMetricsAndRenderChart);
+    }
+    
     // --- Inicialização da Dashboard ---
-    applySavedTheme(); // Aplica o tema salvo (ou padrão)
-    applySavedContrast(); // 🌟 NOVO: Aplica o contraste salvo 🌟
+    applySavedTheme(); 
+    applySavedContrast(); 
     fetchUserName();
     fetchEventsAndPopulate();
+    loadMetricsAndRenderChart(); // ✅ CHAMADA INICIAL DO GRÁFICO
 });

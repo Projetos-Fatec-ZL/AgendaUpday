@@ -17,7 +17,7 @@ const EventSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['estudo', 'trabalho', 'pessoal', 'outros'], // Sugestão de categorias
+        enum: ['estudo', 'prova', 'trabalho', 'sono', 'exercicio', 'evento'], // Sugestão de categorias
         default: 'outros',
     },
     priority: {

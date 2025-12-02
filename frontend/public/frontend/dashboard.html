@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="../css/styledb.css">
     <!-- Font Awesome é CRÍTICO para os ícones, incluindo os novos botões de tema/config -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Script do Chart.js, para o grafico -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
 
@@ -36,7 +39,9 @@
     </header>
 
     <main class="container">
-        <section class="stats-cards">
+        <div class="top-dashboard-row"> 
+            <section class="stats-cards">
+
             <div class="stat-card blue">
                 <div class="card-info">
                     <span class="card-title">Eventos Totais</span>
@@ -44,21 +49,32 @@
                 </div>
                 <i class="fas fa-calendar-alt card-icon"></i>
             </div>
+
             <div class="stat-card green">
                 <div class="card-info">
                     <span class="card-title">Concluídos Hoje</span>
                     <span class="card-value" id="completed-today">0</span>
                 </div>
+
                 <i class="fas fa-check-circle card-icon"></i>
             </div>
+
             <div class="stat-card purple">
+
                 <div class="card-info">
+
                     <span class="card-title">Planos de Estudo</span>
+
                     <span class="card-value">3</span>
+
                 </div>
+
                 <i class="fas fa-book card-icon"></i>
+
             </div>
+
         </section>
+
 
         <section class="content-area">
             <div class="event-list-container">
@@ -82,6 +98,41 @@
                 </div>
             </div>
         </section>
+
+        <hr class="section-divider">
+
+        <!--SEÇÃO DO GRAFICO - comentado para a gravação-->
+        <section class="chart-section content-area">
+
+            <h2>Análise de Eventos por Categoria</h2>
+
+            <div class="chart-controls">
+                <label for="status-filter">Status:</label>
+
+                <select id="status-filter" class="filter-select">
+                    <option value="all">Todos</option>
+                    <option value="pendente">Pendentes</option>
+                    <option value="concluido">Concluídos</option>
+                </select>
+
+                <label for="timeframe-filter">Período:</label>
+
+                <select id="timeframe-filter" class="filter-select">
+                    <option value="all">Sempre</option>
+                    <option value="day">Hoje</option>
+                    <option value="week">Semana</option>
+                    <option value="month">Mês</option>
+                    <option value="year">Ano</option>
+                </select>
+
+            </div>
+
+            <div class="chart-container">
+                <canvas id="category-pie-chart"></canvas>
+            </div>
+
+        </section>
+        </div>
     </main>
     
     <!-- 1. MODAL DE VISUALIZAÇÃO DE TODOS OS EVENTOS -->
@@ -95,6 +146,7 @@
             </div>
         </div>
     </div>
+    
 
     <!-- 2. MODAL DE CRIAÇÃO/EDIÇÃO DE EVENTO (DA SUA VERSÃO) -->
     <div id="novoEventoModal" class="modal-backdrop" style="display: none;">
