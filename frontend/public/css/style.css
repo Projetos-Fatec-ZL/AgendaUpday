@@ -504,3 +504,21 @@ select {
     gap: 15px;
   }
 }
+
+/* --- ESTILOS DO LOGOTIPO (Imagem PNG) --- */
+
+/* 1. Definir o tamanho máximo para a imagem do logo */
+.site-logo {
+    /* Define o tamanho do logo na barra de navegação */
+    height: 40px; /* Altere este valor para o tamanho que desejar */
+    width: auto; /* Mantém a proporção da imagem */
+    margin-right: 15px; /* Espaço entre o logo e a saudação/texto */
+    
+    /* Garante que o alinhamento vertical seja centralizado */
+    display: block; 
+}
+
+/* 2. Ocultar o texto do logo que não é mais necessário */
+.logo .logo-text h1 {
+    display: none;
+}
