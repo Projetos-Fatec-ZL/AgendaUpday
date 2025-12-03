@@ -505,20 +505,26 @@ select {
   }
 }
 
-/* --- ESTILOS DO LOGOTIPO (Imagem PNG) --- */
-
-/* 1. Definir o tamanho máximo para a imagem do logo */
+/* --- ESTILOS PARA O NOVO LOGO PNG (.site-logo) --- */
 .site-logo {
-    /* Define o tamanho do logo na barra de navegação */
-    height: 40px; /* Altere este valor para o tamanho que desejar */
-    width: auto; /* Mantém a proporção da imagem */
-    margin-right: 15px; /* Espaço entre o logo e a saudação/texto */
-    
-    /* Garante que o alinhamento vertical seja centralizado */
-    display: block; 
+    /* Define a altura máxima para o logo, controlando o tamanho */
+    height: 10px; 
+    /* Garante que a imagem não se estique, mantendo a proporção */
+    width: auto;
+    /* Faz a imagem se comportar bem em um layout flexível */
+    display: auto; 
+    /* Espaçamento à direita da logo, se necessário */
+    margin-right: 15px; 
 }
 
-/* 2. Ocultar o texto do logo que não é mais necessário */
+/* Opcional: Se você quiser garantir que o logo e o texto fiquem perfeitamente alinhados */
+.logo {
+    /* Centraliza os itens verticalmente, útil se a logo for maior que o texto */
+    display: flex;
+    align-items: center; 
+}
+
+/* Opcional: Garante que o texto antigo do logo não apareça */
 .logo .logo-text h1 {
     display: none;
 }
