@@ -8,8 +8,8 @@ dotenv.config();
 
 const cors = require('cors');
 const connectDB = require('./config/db');
-const authRoutes = require('./routes/auth'); // Já importa a rota de autenticação
-const eventsRoutes = require('./routes/events'); // 💡 IMPORTAÇÃO DO NOVO ARQUIVO DE ROTAS
+const authRoutes = require('./routes/auth');
+const eventsRoutes = require('./routes/events');
 const startNotificationScheduler = require('./services/notificationScheduler'); 
 
 
@@ -24,6 +24,18 @@ const startServer = async () => {
 
         // 2. Middlewares Globais
         app.use(cors()); //ativa o cors antes das rotas
+        
+        // ===================================================
+        // >>> NOVO DEBUG GLOBAL <<<
+        app.use((req, res, next) => {
+            // Loga apenas a requisição de recuperação para não poluir o terminal
+            if (req.url.includes('/api/auth/recovery-email')) {
+                console.log(`[DEBUG GLOBAL] Requisição recebida em: ${req.url}`);
+            }
+            next(); // Crucial para passar para o próximo middleware/rota
+        });
+        // ===================================================
+
         // Permite que o servidor entenda requisições no formato JSON
         app.use(express.json({extended: false}));//processa dados json
 
