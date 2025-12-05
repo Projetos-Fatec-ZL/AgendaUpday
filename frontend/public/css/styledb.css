@@ -765,7 +765,7 @@ input:checked + .slider:before {
     
     /* Garante que fique escondido por padrão e tenha prioridade Z */
     z-index: 1000; 
-    display: none; /* Mantém a visibilidade inicial no CSS */
+    /* display: none; Mantém a visibilidade inicial no CSS */
 }
 
 /* ---------------------------------- */

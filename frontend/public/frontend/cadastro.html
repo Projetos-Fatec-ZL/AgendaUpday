@@ -49,6 +49,9 @@
                
                 <div class="carousel-slide-content generic-bg-2">
                     </div>
+
+                <div class="carousel-slide-content generic-bg-3">
+                    </div>
  
             </div>
            
@@ -59,6 +62,7 @@
                 <span class="dot active" data-slide="0"></span>
                 <span class="dot" data-slide="1"></span>
                 <span class="dot" data-slide="2"></span>
+                <span class="dot" data-slide="3"></span>
             </div>
            
         </section>
@@ -89,32 +93,40 @@
     </main>
    
     <script>
-        const slidesContainer = document.getElementById('carouselSlides');
-        const dotsContainer = document.getElementById('carouselDots');
-        const dots = dotsContainer.querySelectorAll('.dot');
-        const prevButton = document.getElementById('prevSlide');
-        const nextButton = document.getElementById('nextSlide');
-       
-        const totalSlides = dots.length;
-        let currentSlide = 0;
- 
-        function updateCarousel() {  
-            slidesContainer.style.transform = `translateX(-${currentSlide * (100 / totalSlides)}%)`;
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentSlide);
-            });
+    const slidesContainer = document.getElementById('carouselSlides');
+    const dotsContainer = document.getElementById('carouselDots');
+
+    // ESTA LINHA AGORA PEGARÁ 4 PONTOS/SLIDES
+    const dots = dotsContainer.querySelectorAll('.dot');
+
+    const prevButton = document.getElementById('prevSlide');
+    const nextButton = document.getElementById('nextSlide');
+
+    // AGORA SERÁ 4 (dots.length)
+    const totalSlides = dots.length;
+    let currentSlide = 0;
+
+    function updateCarousel() {  
+        // O CÁLCULO AGORA É FEITO SOBRE 4 SLIDES (100 / 4 = 25%)
+        slidesContainer.style.transform = `translateX(-${currentSlide * (100 / totalSlides)}%)`;
+
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+
+    function goToSlide(index) {
+        if (index < 0) {
+            // Volta para o último (índice 3)
+            currentSlide = totalSlides - 1;
+        } else if (index >= totalSlides) {
+            // Volta para o primeiro (índice 0)
+            currentSlide = 0;
+        } else {
+            currentSlide = index;
         }
- 
-        function goToSlide(index) {
-            if (index < 0) {
-                currentSlide = totalSlides - 1;
-            } else if (index >= totalSlides) {
-                currentSlide = 0;
-            } else {
-                currentSlide = index;
-            }
-            updateCarousel();
-        }
+        updateCarousel();
+    }
  
         prevButton.addEventListener('click', () => {
             goToSlide(currentSlide - 1);
@@ -132,11 +144,11 @@
         });
  
         setInterval(() => {
-            goToSlide(currentSlide + 1);
-        }, 10000);
- 
-        updateCarousel();
-    </script>
+        goToSlide(currentSlide + 1);
+    }, 10000);
+
+    updateCarousel();
+</script>
 
 <script src="../javascript/auth.js"></script>
 </body>

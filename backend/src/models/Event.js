@@ -25,6 +25,10 @@ const EventSchema = new mongoose.Schema({
         enum: ['baixa', 'media', 'alta'], // Sugestão de prioridades
         default: 'media',
     },
+    duration: {
+        type: Number, 
+        // default: 0, 
+    },
     
     // 2. Chave de Ligação (Crucial para o JWT Middleware)
     userId: {

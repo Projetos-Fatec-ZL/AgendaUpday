@@ -45,7 +45,6 @@ async function sendEventNotificationEmail(user, event) {
             <p>Seu evento <b>${event.title}</b> está agendado para:</p>
             
             <p>📅 <b>Data e Hora:</b> ${eventDate}</p>
-            <p>⏳ <b>Duração:</b> ${event.duration} minutos</p>
             
             <p>Atenciosamente, AgendaUpday Team.</p>
         `,

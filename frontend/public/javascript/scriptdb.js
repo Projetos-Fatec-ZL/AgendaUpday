@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     </div>
                     <div class="event-details">
                         <span class="event-title ${titleClass}">${event.title}</span>
-                        <span class="event-time">${displayTime} - Duração: ${event.duration || '?'} min</span>
+                        <span class="event-time">${displayTime}</span>
                     </div>
                 </div>
                 <div class="event-actions">
@@ -702,6 +702,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
 
+            const parsedDuration = parseInt(duration);
+
+            if (isNaN(parsedDuration) || parsedDuration < 0) {
+                showFeedback("A Duração deve ser um número válido (minutos) e não negativo.", 'error');
+                return;
+            }
+
             const localDate = new Date(dateInput); 
             const isoDateString = localDate.toISOString(); 
             
@@ -711,7 +718,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 date: isoDateString, 
                 category: type, 
                 priority,
-                duration: parseInt(duration),
+                duration: parsedDuration,
             };
             
             const token = getToken(); 
